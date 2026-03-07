@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import CommandPalette from './CommandPalette';
 
 /* ─── Injected global styles ─────────────────────────────── */
 const navbarStyles = `
@@ -176,7 +177,7 @@ function MoreButton() {
                         style={{
                             position: 'absolute',
                             top: 'calc(100% + 15px)',
-                            left: '50%',
+                            right: 0,
                             display: 'grid',
                             gridTemplateColumns: '220px 260px',
                             borderRadius: '18px',
@@ -267,8 +268,21 @@ function MoreButton() {
 
 /* ─── Main Navbar ─────────────────────────────────────────── */
 export default function Navbar() {
+    const [cmdOpen, setCmdOpen] = useState(false);
     const { scrollY } = useScroll();
     const pillRef = useRef(null);
+
+    /* Global Cmd+K / Ctrl+K shortcut */
+    useEffect(() => {
+        const handler = (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setCmdOpen(v => !v);
+            }
+        };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, []);
 
     /* Text slides left and disappears into the divider over first 120px of scroll */
     const textX = useTransform(scrollY, [0, 120], [0, -62]);
@@ -402,6 +416,37 @@ export default function Navbar() {
                         {/* Separator */}
                         <div style={{ width: '1px', height: '22px', backgroundColor: '#2a2c2e', margin: '0 4px', flexShrink: 0 }} />
 
+                        {/* ⌘ Command Palette button */}
+                        <button
+                            onClick={() => setCmdOpen(true)}
+                            title="Command Palette (⌘K)"
+                            style={{
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                width: '34px', height: '34px',
+                                borderRadius: '50%',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                color: 'rgba(255,255,255,0.55)',
+                                cursor: 'pointer',
+                                fontSize: 16,
+                                transition: 'background 0.2s, color 0.2s, border-color 0.2s',
+                                flexShrink: 0,
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                                e.currentTarget.style.color = 'white';
+                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                                e.currentTarget.style.color = 'rgba(255,255,255,0.55)';
+                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                            }}
+                            aria-label="Open command palette"
+                        >
+                            ⌘
+                        </button>
+
                         {/* Theme toggle */}
                         <button
                             className="flex items-center justify-center rounded-full bg-[#121212] text-white transition-colors"
@@ -420,6 +465,7 @@ export default function Navbar() {
                     </div>
                 </motion.div>
             </nav>
+            <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
         </>
     );
 }

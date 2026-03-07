@@ -903,7 +903,12 @@ const About = () => {
                   Sheikh
                 </span>
               </h2>
-              <p className="text-sm text-gray-400 mt-2">📍 Nagpur, IN • {timeStr}</p>
+              <p className="text-sm text-gray-400 mt-2 flex items-center gap-1 ">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(102, 102, 102, 1)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                Nagpur, IN • {timeStr}</p>
             </div>
             <PhotoCardsGroup />
             <div className="flex justify-center gap-6 text-gray-400 relative z-10">

@@ -153,8 +153,8 @@ export default function Hero() {
                             <polyline points="2 17 12 22 22 17" />
                             <polyline points="2 12 12 17 22 12" />
                         </svg>
-                        <span className="text-white font-bold uppercase" style={{ fontSize: 'clamp(8px,2.5vw,11px)', letterSpacing: '0.18em' }}>Full Stack Dev,</span>
-                        <span className="text-gray-500 uppercase" style={{ fontSize: 'clamp(7px,2vw,10px)', letterSpacing: '0.18em' }}>&amp; Designer</span>
+                        <span className="text-white font-bold uppercase" style={{ fontSize: 'clamp(8px,2.5vw,11px)', letterSpacing: '0.18em' }}>AI Innovator,</span>
+                        <span className="text-gray-500 uppercase" style={{ fontSize: 'clamp(7px,2vw,10px)', letterSpacing: '0.18em' }}>&amp; Web Developer</span>
                     </div>
                 </div>
 
