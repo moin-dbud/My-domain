@@ -653,19 +653,7 @@ export default function Projects() {
                         </div>
                     </div>
 
-                    {/* Bottom progress bar */}
-                    <div style={{
-                        position: 'absolute', bottom: 0, left: 0, right: 0,
-                        height: 2, background: 'rgba(255,255,255,0.06)', zIndex: 10,
-                    }}>
-                        <motion.div style={{
-                            height: '100%',
-                            background: `linear-gradient(90deg,${project.color},#a855f7)`,
-                            scaleX: scrollYProgress,
-                            transformOrigin: 'left',
-                            transition: 'background 0.6s ease',
-                        }} />
-                    </div>
+
                 </section>
             </div>
         </>
