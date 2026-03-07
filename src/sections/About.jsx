@@ -885,12 +885,12 @@ const About = () => {
     bg-[radial-gradient(circle_at_center,transparent_45%,rgba(100, 97, 97, 0.65)_100%)]`;
 
   return (
-    <section className="w-full bg-black text-white px-12 py-15"
+    <section className="w-full bg-black text-white px-4 sm:px-12 py-10 sm:py-15"
       style={{ fontFamily: "'Inter',sans-serif" }}>
       <div className="max-w-8xl mx-auto">
 
-        {/* ════════════ TOP ROW ════════════ */}
-        <div className="grid grid-cols-[1fr_2.2fr_1fr] gap-9 relative" style={{ zIndex: 10 }}>
+        {/* ════════════ TOP ROW — desktop: 3-col grid | mobile: single col stack ════════════ */}
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr_2.2fr_1fr] gap-6 sm:gap-9 relative" style={{ zIndex: 10 }}>
 
           {/* LEFT: Intro card */}
           <div className={`${cardBase} relative p-6 h-[500px] flex flex-col justify-between overflow-hidden`}>
@@ -907,20 +907,42 @@ const About = () => {
             </div>
             <PhotoCardsGroup />
             <div className="flex justify-center gap-6 text-gray-400 relative z-10">
-              {[["in", "#"], ["gh", "#"], ["tw", "#"]].map(([l, h]) => (
-                <a key={l} href={h}
-                  className="hover:text-white transition-colors tracking-widest uppercase text-xs font-medium">
-                  {l}
-                </a>
-              ))}
+              {/* LinkedIn */}
+              <a href="#" aria-label="LinkedIn"
+                className="hover:text-white transition-colors"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)' }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                  <rect x="2" y="9" width="4" height="12" />
+                  <circle cx="4" cy="4" r="2" />
+                </svg>
+              </a>
+              {/* GitHub */}
+              <a href="#" aria-label="GitHub"
+                className="hover:text-white transition-colors"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)' }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+                </svg>
+              </a>
+              {/* Twitter / X */}
+              <a href="#" aria-label="Twitter"
+                className="hover:text-white transition-colors"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </a>
             </div>
           </div>
 
-          {/* CENTER: AI-Driven card — z:30 so clock floats above bottom cards */}
-          <div className={`${cardBase} relative h-[500px] overflow-visible`} style={{ zIndex: 30 }}>
+          {/* CENTER: AI-Driven card — z:30 so clock floats above bottom cards (desktop only) */}
+          <div className={`${cardBase} relative overflow-hidden sm:overflow-visible`}
+            style={{ zIndex: 30, height: undefined }}
+          >
             <div className={vignette} />
-            <div className="relative z-10 p-10">
-              <div className="flex justify-between items-center mb-8">
+            <div className="relative z-10 p-6 sm:p-10 h-full" style={{ minHeight: 320 }}>
+              <div className="flex justify-between items-center mb-6 sm:mb-8">
                 <div className="flex items-center gap-3 text-xs tracking-widest text-gray-400">
                   <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center">
                     🤖
@@ -929,18 +951,19 @@ const About = () => {
                 </div>
                 <div className="text-xs tracking-widest text-gray-500">PHILOSOPHY ✦</div>
               </div>
-              <h1 className="text-3xl font-bold leading-tight">
+              <h1 className="text-2xl sm:text-3xl font-bold leading-tight">
                 Intelligent<br />
                 <span className="italic font-light text-gray-400"
                   style={{ letterSpacing: "-0.01em", fontFamily: "'Playfair Display',serif" }}>
                   systems that scale.
                 </span>
               </h1>
-              <p className="text-gray-400 text-[12px] mt-2 max-w-[250px]">
+              <p className="text-gray-400 text-[12px] mt-2 max-w-[280px]">
                 I build AI-powered applications and scalable web systems that transform ideas into real-world products.
               </p>
-              <div className="absolute top-24 right-10 text-right">
-                <div className="flex gap-2 justify-end mb-5">
+              {/* Tabs — inline on mobile, absolute on desktop */}
+              <div className="mt-6 sm:absolute sm:top-24 sm:right-10 sm:text-right">
+                <div className="flex gap-2 sm:justify-end mb-4 sm:mb-5 flex-wrap">
                   {tabs.map(tab => (
                     <button key={tab} onClick={() => setActiveTab(tab)}
                       className={`relative px-3 py-1 text-[10px] rounded-full border transition-all duration-300
@@ -957,18 +980,17 @@ const About = () => {
                 <motion.div key={activeTab}
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25 }}>
-                  <p className="text-white text-[15px] font-medium">{TAB_CONTENT[activeTab].title}</p>
-                  <p className="text-gray-500 text-[12px] max-w-[220px] ml-auto mt-1">
+                  <p className="text-white text-[14px] sm:text-[15px] font-medium">{TAB_CONTENT[activeTab].title}</p>
+                  <p className="text-gray-500 text-[12px] sm:max-w-[220px] sm:ml-auto mt-1">
                     {TAB_CONTENT[activeTab].text}
                   </p>
                 </motion.div>
               </div>
             </div>
-            {/* Black cutout disc — masks content under clock */}
-            <div className="absolute left-1/2 -translate-x-1/2 bottom-[-255px]
+            {/* Black cutout disc + Clock — DESKTOP ONLY */}
+            <div className="hidden sm:block absolute left-1/2 -translate-x-1/2 bottom-[-255px]
               w-[450px] h-[450px] rounded-full bg-black z-20" />
-            {/* Clock */}
-            <div className="absolute left-1/2 -translate-x-1/2 bottom-[-225px] z-30">
+            <div className="hidden sm:block absolute left-1/2 -translate-x-1/2 bottom-[-225px] z-30">
               <AnalogClock />
             </div>
           </div>
@@ -980,8 +1002,9 @@ const About = () => {
               setSpot({ x: e.clientX - r.left, y: e.clientY - r.top });
             }}
             className="relative rounded-3xl border border-white/[0.1]
-              bg-[#0a0a0a] backdrop-blur-xl p-8 h-[500px] flex flex-col
+              bg-[#0a0a0a] backdrop-blur-xl p-6 sm:p-8 flex flex-col
               justify-between overflow-hidden group transition-all duration-300"
+            style={{ minHeight: 320 }}
           >
             <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300"
               style={{ background: `radial-gradient(300px circle at ${spot.x}px ${spot.y}px,rgba(255,255,255,0.12),transparent 60%)` }} />
@@ -1030,8 +1053,8 @@ const About = () => {
             perfectly over the gap at center 50%.
             z:5 keeps bottom cards behind the clock.
         ═══════════════════════════════════════ */}
-        <div className="grid grid-cols-2 gap-9 relative"
-          style={{ zIndex: 5, marginTop: 36 }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-9 relative"
+          style={{ zIndex: 5, marginTop: 24 }}>
 
           {/* ── BOTTOM LEFT: Available Globally ── */}
           <div className={`${cardBase} relative overflow-hidden`}
