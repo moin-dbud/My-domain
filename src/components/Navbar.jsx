@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import CommandPalette from './CommandPalette';
+import { useFloodNavigate } from './PageTransition';
 
 /* ─── Injected global styles ─────────────────────────────── */
 const navbarStyles = `
@@ -271,6 +273,8 @@ export default function Navbar() {
     const [cmdOpen, setCmdOpen] = useState(false);
     const { scrollY } = useScroll();
     const pillRef = useRef(null);
+    const { floodNavigate } = useFloodNavigate();
+    const { pathname } = useLocation();
 
     /* Global Cmd+K / Ctrl+K shortcut */
     useEffect(() => {
@@ -406,10 +410,10 @@ export default function Navbar() {
                         className="flex items-center gap-0.5 rounded-full p-1.5"
                         style={{ border: '1px solid #1f1f1f', background: 'rgba(10,10,10,0.8)' }}
                     >
-                        {/* Nav links */}
-                        <NavLink label="Home" active />
-                        <NavLink label="About" />
-                        <NavLink label="Work" />
+                        {/* Nav links — active pill follows current route */}
+                        <NavLink label="Home" active={pathname === '/'} onClick={(e) => floodNavigate('/', e)} />
+                        <NavLink label="About" active={pathname === '/about'} onClick={(e) => floodNavigate('/about', e)} />
+                        <NavLink label="Work" active={pathname === '/work'} onClick={(e) => floodNavigate('/work', e)} />
                         <NavLink label="Blogs" />
                         <MoreButton />
 
