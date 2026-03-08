@@ -341,10 +341,10 @@ function DraggableGlobe({ size = 240, activeCountry = "IN" }) {
 ═══════════════════════════════════════════════════════════ */
 function SceneContent({ scene }) {
   const images = {
-    image1: "/image1.jpg", image2: "/image2.jpg", image3: "/image3.jpg",
-    image4: "/image4.jpg", image5: "/image5.jpg", image6: "/image6.jpg",
-    image7: "/image7.jpg", image8: "/image8.jpg", image9: "/image9.jpg",
-    image10: "/image10.jpg",
+    image1: "/image1.webp", image2: "/image2.webp", image3: "/image3.webp",
+    image4: "/image4.webp", image5: "/image5.webp", image6: "/image6.webp",
+    image7: "/image7.webp", image8: "/image8.webp", image9: "/image9.webp",
+    image10: "/image10.webp",
   };
   return (
     <img src={images[scene]} alt="" draggable="false"

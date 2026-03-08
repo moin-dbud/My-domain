@@ -26,12 +26,12 @@ const PROJECTS = [
             { label: 'MongoDB', icon: '�' },
             { label: 'Tailwind CSS', icon: '🎨' },
             { label: 'Framer Motion', icon: '◈' },
-            { label: 'JWT Auth', icon: '�' },
+            { label: 'JWT Auth', icon: '' },
             { label: 'Vercel', icon: '▲' },
         ],
         desktop: { bg: '#0f0a04', accent: '#f97316' },
         mobile: { bg: '#130c03', accent: '#f97316', label: 'My Projects' },
-        images: { desktop: '/desktop-madeit.png', mobile: '/mobile-madeit.png' },
+        images: { desktop: '/desktop-madeit.webp', mobile: '/mobile-madeit.webp' },
     },
     {
         id: 1,
@@ -60,7 +60,7 @@ const PROJECTS = [
         ],
         desktop: { bg: '#0d0814', accent: '#a855f7' },
         mobile: { bg: '#120a1a', accent: '#a855f7', label: 'Study Plan' },
-        images: { desktop: '/desktop-nexora.png', mobile: '/mobile-nexora.png' },
+        images: { desktop: '/desktop-nexora.webp', mobile: '/mobile-nexora.webp' },
     },
     {
         id: 2,
@@ -89,7 +89,7 @@ const PROJECTS = [
         ],
         desktop: { bg: '#03111a', accent: '#38bdf8' },
         mobile: { bg: '#051520', accent: '#38bdf8', label: 'My Courses' },
-        images: { desktop: '/desktop-levelup.png', mobile: '/mobile-levelup.png' },
+        images: { desktop: '/desktop-levelup.webp', mobile: '/mobile-levelup.webp' },
     },
     {
         id: 3,
@@ -116,7 +116,7 @@ const PROJECTS = [
         ],
         desktop: { bg: '#0a0a0a', accent: '#94a3b8' },
         mobile: { bg: '#111', accent: '#94a3b8', label: 'Analyze Resume' },
-        images: { desktop: '/desktop-resume.png', mobile: '/mobile-resume.png' },
+        images: { desktop: '/desktop-resume.webp', mobile: '/mobile-resume.webp' },
     },
 ];
 
@@ -387,7 +387,7 @@ function Timeline({ activeIndex, total, scrollProgress }) {
                         transition: 'box-shadow 0.5s ease, background 0.5s ease',
                     }}>
                         <img
-                            src="/cropped_circle_image.png"
+                            src="/cropped_circle_image.webp"
                             alt="Profile"
                             style={{
                                 width: '100%', height: '100%',

@@ -8,4 +8,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    allowedHosts: [
+      "fifth-puts-sand-grants.trycloudflare.com"
+    ]
+  }
 })
