@@ -1,4 +1,4 @@
-import Navbar from '../components/Navbar';
+import { useEffect } from "react";
 import PageHero from '../components/PageHero';
 import Glace from '../sections/Glace';
 import GitHubActivity from '../sections/GitHubActivity';
@@ -6,9 +6,11 @@ import BehindSystems from '../sections/BehindSystems';
 import Footer from '../components/Footer';
 
 export default function About() {
+    useEffect(() => {
+        document.title = "About | Moin Sheikh";
+    }, []);
     return (
         <main style={{ background: '#000', minHeight: '100vh' }}>
-            <Navbar />
             <PageHero
                 title="ABOUT ME"
                 subtitle="Get to know more about"

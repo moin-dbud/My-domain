@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Work from './pages/Work';
 import SmoothScroll from './components/SmoothScroll';
+import Navbar from './components/Navbar';
 import { FloodTransitionProvider, PageTransition } from './components/PageTransition';
 
 function App() {
@@ -10,6 +11,8 @@ function App() {
     <SmoothScroll>
       <BrowserRouter>
         <FloodTransitionProvider>
+          <Navbar />
+
           <Routes>
             <Route path="/" element={<PageTransition><Home /></PageTransition>} />
             <Route path="/about" element={<PageTransition><About /></PageTransition>} />
