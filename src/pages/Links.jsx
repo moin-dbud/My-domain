@@ -20,7 +20,7 @@ const LINKS = [
         id: 'linkedin',
         name: 'LinkedIn',
         description: 'Connect professionally and explore my career journey.',
-        url: 'https://linkedin.com/in/moin-sheikh',
+        url: 'https://linkedin.com/in/moin-s-sheikh',
         accent: '#60a5fa',
         icon: (
             <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
@@ -44,7 +44,7 @@ const LINKS = [
         id: 'email',
         name: 'Email',
         description: 'Reach out directly for collaborations, projects, or just a hello.',
-        url: 'mailto:moinsheikh1303@gmail.com',
+        url: 'mailto:hello@moinsheikh.in',
         accent: '#fb923c',
         icon: (
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -57,7 +57,7 @@ const LINKS = [
         id: 'instagram',
         name: 'Instagram',
         description: 'Behind the scenes of building, creating, and everyday life.',
-        url: 'https://instagram.com/',
+        url: 'https://instagram.com/moin__sheikh_18',
         accent: '#f472b6',
         icon: (
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
