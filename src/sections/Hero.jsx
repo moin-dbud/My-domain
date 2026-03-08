@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 const heroStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Playfair+Display:ital@1&family=Inter:wght@300;400;500;600&display=swap');
 
-  @keyframes parthFadeIn {
+  @keyframes moinFadeIn {
     0%   { opacity: 0; }
     100% { opacity: 1; }
   }
@@ -19,7 +19,7 @@ const heroStyles = `
     100% { opacity: 1; transform: translateY(0); }
   }
 
-  .parth-anim        { animation: parthFadeIn  1.4s cubic-bezier(0.22,1,0.36,1) 0.1s  both; }
+  .moin-anim        { animation: moinFadeIn  1.4s cubic-bezier(0.22,1,0.36,1) 0.1s  both; }
   .tagline-caps-anim { animation: glassUp      1.0s cubic-bezier(0.22,1,0.36,1) 0.7s  both; }
   .tagline-serif-anim{ animation: glassUp      1.0s cubic-bezier(0.22,1,0.36,1) 1.0s  both; }
   .bottom-anim       { animation: fadeUpSoft   0.8s ease-out                    1.4s  both; }
@@ -106,7 +106,7 @@ export default function Hero() {
                 <div className="flex-1 flex flex-col items-center justify-center" style={{ marginTop: '-3rem' }}>
 
                     <h1
-                        className="parth-anim text-white select-none leading-none"
+                        className="moin-anim text-white select-none leading-none"
                         style={{
                             fontFamily: "'Montserrat', sans-serif",
                             fontWeight: 900,

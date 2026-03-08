@@ -318,7 +318,7 @@ export default function Footer() {
                                     background: '#1a1a1a',
                                 }}>
                                     <img
-                                        src="/cropped_circle_image.png"
+                                        src="/cropped_circle_image.webp"
                                         alt="Moin Sheikh"
                                         style={{
                                             width: '100%',

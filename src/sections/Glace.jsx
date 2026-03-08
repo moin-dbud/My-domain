@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /* ─── Images ──────────────────────────────────────────────────── */
-const IMAGES = ['/image2.jpg', '/image3.jpg', '/image10.jpg'];
+const IMAGES = ['/image2.webp', '/image3.webp', '/image10.webp'];
 
 /* Card position configs: index 0 = front, 1 = back-left, 2 = back-right */
 const POSITIONS = [
-    { x: 0, rotate: 0, scale: 1.0, zIndex: 3, opacity: 1 }, // front
-    { x: -72, rotate: -11, scale: 0.87, zIndex: 2, opacity: 0.82 }, // back-left
-    { x: 72, rotate: 11, scale: 0.87, zIndex: 1, opacity: 0.68 }, // back-right
+    { x: 0, rotate: 0, scale: 1.0, zIndex: 3, opacity: 1 },
+    { x: -72, rotate: -11, scale: 0.87, zIndex: 2, opacity: 0.82 },
+    { x: 72, rotate: 11, scale: 0.87, zIndex: 1, opacity: 0.68 },
 ];
 
 /* ─── Stacked Image Card Rotator ──────────────────────────────── */
@@ -158,12 +158,12 @@ function SocialLinks() {
 }
 
 /* ─── Main Glace Section ──────────────────────────────────────── */
-export default function Glace() {
+export default function Glace({label, headline, highlight, description, final}) {
     return (
         <section style={{
             background: '#000',
             width: '100%',
-            padding: '110px 48px 130px',
+            padding: '90px 20px 130px',
             fontFamily: "'Inter',sans-serif",
             borderTop: 'none',
             margin: 0,
@@ -205,7 +205,7 @@ export default function Glace() {
                             margin: '0 0 22px 0',
                         }}
                     >
-                        A Quick Glance
+                        {label}
                     </motion.p>
 
                     {/* Headline */}
@@ -223,8 +223,7 @@ export default function Glace() {
                             margin: '0 0 32px 0',
                         }}
                     >
-                        Building the bridge between<br />
-                        ideas and{' '}
+                        {headline}{' '}
                         <span style={{
                             fontStyle: 'italic',
                             fontFamily: "'Playfair Display', serif",
@@ -232,7 +231,7 @@ export default function Glace() {
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                         }}>
-                            intelligent systems
+                            {highlight}
                         </span>
                     </motion.h2>
 
@@ -245,9 +244,7 @@ export default function Glace() {
                         style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 36 }}
                     >
                         {[
-                            "I'm Moin Sheikh, an AI developer and web innovator focused on turning ambitious ideas into intelligent digital products. I specialize in building full-stack applications powered by modern AI tools, combining thoughtful design with scalable engineering.",
-                            "My work sits at the intersection of AI and software systems. From intelligent learning platforms to productivity tools, I build products that solve real problems and deliver practical value.",
-                            "I'm passionate about shipping real systems — not just prototypes — and continuously exploring how AI can make software more useful, adaptive, and human-centric.",
+                            description,
                         ].map((para, i) => (
                             <p key={i} style={{
                                 fontSize: 14.5, lineHeight: 1.78,
@@ -266,7 +263,7 @@ export default function Glace() {
                             margin: '4px 0 0 0',
                             fontFamily: "'Playfair Display', serif",
                         }}>
-                            My goal is simple: build systems that think, scale, and create impact.
+                            {final}
                         </p>
                     </motion.div>
 
