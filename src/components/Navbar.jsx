@@ -88,6 +88,7 @@ const MORE_ITEMS = [
         ),
         title: 'Links',
         sub: 'Socials & Profiles',
+        route: '/links',
     },
     {
         icon: (
@@ -98,6 +99,7 @@ const MORE_ITEMS = [
         ),
         title: 'Uses',
         sub: 'My gear & software',
+        route: null,
     },
     {
         icon: (
@@ -108,6 +110,7 @@ const MORE_ITEMS = [
         ),
         title: 'Guestbook',
         sub: 'Sign my wall',
+        route: null,
     },
 ];
 
@@ -135,6 +138,7 @@ function NavLink({ label, active = false, onClick }) {
 function MoreButton() {
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
+    const { floodNavigate } = useFloodNavigate();
 
     useEffect(() => {
         const handler = (e) => {
@@ -220,10 +224,13 @@ function MoreButton() {
 
                         {/* Right — menu items */}
                         <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            {MORE_ITEMS.map(({ icon, title, sub }) => (
+                            {MORE_ITEMS.map(({ icon, title, sub, route }) => (
                                 <button
                                     key={title}
-                                    onClick={() => setOpen(false)}
+                                    onClick={(e) => {
+                                        setOpen(false);
+                                        if (route) floodNavigate(route, e);
+                                    }}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -414,7 +421,7 @@ export default function Navbar() {
                         <NavLink label="Home" active={pathname === '/'} onClick={(e) => floodNavigate('/', e)} />
                         <NavLink label="About" active={pathname === '/about'} onClick={(e) => floodNavigate('/about', e)} />
                         <NavLink label="Work" active={pathname === '/work'} onClick={(e) => floodNavigate('/work', e)} />
-                        <NavLink label="Blogs" />
+                        <NavLink label="Blogs" active={pathname === '/blogs'} onClick={(e) => floodNavigate('/blogs', e)} />
                         <MoreButton />
 
                         {/* Separator */}
