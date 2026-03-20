@@ -395,6 +395,9 @@ export default function Links() {
                     @media (max-width: 640px) {
                         .links-grid { grid-template-columns: 1fr; }
                     }
+                    @media (max-width: 480px) {
+                        .links-card { padding: 18px 20px !important; }
+                    }
                 `}</style>
 
                 <div className="links-grid">

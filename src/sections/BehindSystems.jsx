@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import LifeSnapshotCard from '../components/LifeSnapshotCard';
 
 /* ─── Helpers ─────────────────────────────────────────────────── */
 function timeAgo(dateStr) {
@@ -478,7 +479,8 @@ function SpotifyCard() {
 function Card({ children, index }) {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 28 }}
+            className="bs-card"
+        initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.55, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
@@ -491,7 +493,8 @@ function Card({ children, index }) {
                 display: 'flex', flexDirection: 'column',
                 cursor: 'default',
                 transition: 'border-color 0.25s',
-                minHeight: 320,
+                height: 420,
+                overflow: 'hidden',
             }}
             onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'}
             onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'}
@@ -514,17 +517,14 @@ export default function BehindSystems() {
         }}>
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital@1&display=swap');
-                .bs-grid {
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 20px;
-                }
+                .bs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
                 @media (max-width: 960px) {
                     .bs-grid { grid-template-columns: repeat(2, 1fr); }
                 }
                 @media (max-width: 600px) {
                     .bs-grid { grid-template-columns: 1fr; }
                     .bs-section { padding: 64px 20px 80px !important; }
+                    .bs-card { height: auto !important; min-height: 320px !important; }
                 }
             `}</style>
 
@@ -576,7 +576,7 @@ export default function BehindSystems() {
             >
                 <Card index={0}><GitHubCard /></Card>
                 <Card index={1}><VisitorsCard /></Card>
-                <Card index={2}><SpotifyCard /></Card>
+                <Card index={2}><LifeSnapshotCard /></Card>
             </div>
         </section>
     );

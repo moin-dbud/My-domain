@@ -4,6 +4,57 @@ import { useLocation } from 'react-router-dom';
 import CommandPalette from './CommandPalette';
 import { useFloodNavigate } from './PageTransition';
 
+/* ─── Mobile nav styles ──────────────────────────────────────── */
+const mobileNavStyles = `
+  .mobile-nav-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow-y: auto;
+  }
+  .mobile-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 28px;
+    color: rgba(255,255,255,0.75);
+    font-size: 18px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    text-align: left;
+    width: 100%;
+    transition: color 0.2s, background 0.2s;
+  }
+  .mobile-nav-link:hover, .mobile-nav-link.active {
+    color: white;
+    background: rgba(255,255,255,0.04);
+  }
+  .mobile-nav-link.active {
+    color: white;
+    font-weight: 700;
+  }
+  .mobile-nav-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+`;
+
 /* ─── Injected global styles ─────────────────────────────── */
 const navbarStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Inter:wght@300;400;500;600&display=swap');
@@ -82,6 +133,16 @@ const MORE_ITEMS = [
     {
         icon: (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18" />
+            </svg>
+        ),
+        title: 'Labs',
+        sub: 'Experiments & tools',
+        route: '/labs',
+    },
+    {
+        icon: (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
             </svg>
@@ -93,24 +154,13 @@ const MORE_ITEMS = [
     {
         icon: (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="3" width="20" height="14" rx="2" />
-                <path d="M8 21h8M12 17v4" />
-            </svg>
-        ),
-        title: 'Uses',
-        sub: 'My gear & software',
-        route: null,
-    },
-    {
-        icon: (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="5" y="2" width="14" height="20" rx="2" />
                 <path d="M9 7h6M9 11h6M9 15h4" />
             </svg>
         ),
         title: 'Guestbook',
         sub: 'Sign my wall',
-        route: null,
+        route: '/guestbook',
     },
 ];
 
@@ -354,6 +404,11 @@ export default function Navbar() {
     return (
         <>
             <style>{navbarStyles}</style>
+            <style>{mobileNavStyles}</style>
+
+            {/* ── MOBILE NAV ── */}
+            <MobileNav />
+
             <nav
                 className="nav-anim w-full hidden sm:flex items-center px-6 py-5"
                 style={{
@@ -477,6 +532,177 @@ export default function Navbar() {
                 </motion.div>
             </nav>
             <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
+        </>
+    );
+}
+
+/* ─── Mobile Navigation Component ───────────────────────────── */
+function MobileNav() {
+    const [open, setOpen] = useState(false);
+    const { floodNavigate } = useFloodNavigate();
+    const { pathname } = useLocation();
+
+    const NAV_LINKS = [
+        { label: 'Home', route: '/', icon: '○' },
+        { label: 'About', route: '/about', icon: '◎' },
+        { label: 'Work', route: '/work', icon: '▣' },
+        { label: 'Blogs', route: '/blogs', icon: '✦' },
+        { label: 'Labs', route: '/labs', icon: '⬡' },
+        { label: 'Links', route: '/links', icon: '⬢' },
+        { label: 'Guestbook', route: '/guestbook', icon: '✎' },
+    ];
+
+    // Close on route change
+    useEffect(() => { setOpen(false); }, [pathname]);
+
+    // Prevent body scroll when open
+    useEffect(() => {
+        if (open) document.body.style.overflow = 'hidden';
+        else document.body.style.overflow = '';
+        return () => { document.body.style.overflow = ''; };
+    }, [open]);
+
+    return (
+        <>
+            {/* Mobile top bar */}
+            <div
+                className="sm:hidden"
+                style={{
+                    position: 'fixed', top: 0, left: 0, right: 0,
+                    zIndex: 210,
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '12px 20px',
+                    background: open ? 'transparent' : 'rgba(0,0,0,0.0)',
+                    transition: 'background 0.3s',
+                }}
+            >
+                {/* Logo */}
+                <span
+                    style={{
+                        fontSize: '18px',
+                        fontFamily: "'Playfair Display', serif",
+                        fontStyle: 'italic',
+                        fontWeight: 600,
+                        color: 'white',
+                        letterSpacing: '-0.01em',
+                    }}
+                >
+                    MS
+                </span>
+
+                {/* Hamburger toggle */}
+                <button
+                    onClick={() => setOpen(v => !v)}
+                    aria-label={open ? 'Close menu' : 'Open menu'}
+                    style={{
+                        width: 40, height: 40,
+                        borderRadius: '50%',
+                        background: open ? 'rgba(255,255,255,0.1)' : 'rgba(10,10,10,0.85)',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        cursor: 'pointer',
+                        backdropFilter: 'blur(14px)',
+                        WebkitBackdropFilter: 'blur(14px)',
+                        flexDirection: 'column',
+                        gap: open ? 0 : 5,
+                        padding: '10px',
+                        transition: 'background 0.2s, gap 0.25s',
+                        outline: 'none',
+                    }}
+                >
+                    <motion.span
+                        animate={open
+                            ? { rotate: 45, y: 4, width: 20 }
+                            : { rotate: 0,  y: 0, width: 18 }
+                        }
+                        transition={{ duration: 0.25 }}
+                        style={{ display: 'block', height: 1.5, background: 'white', borderRadius: 2, transformOrigin: 'center' }}
+                    />
+                    <motion.span
+                        animate={open
+                            ? { opacity: 0, scaleX: 0 }
+                            : { opacity: 1, scaleX: 1 }
+                        }
+                        transition={{ duration: 0.18 }}
+                        style={{ display: 'block', height: 1.5, background: 'white', borderRadius: 2, width: 20 }}
+                    />
+                    <motion.span
+                        animate={open
+                            ? { rotate: -45, y: -4, width: 20 }
+                            : { rotate: 0,  y: 0,  width: 14 }
+                        }
+                        transition={{ duration: 0.25 }}
+                        style={{ display: 'block', height: 1.5, background: 'white', borderRadius: 2, transformOrigin: 'center' }}
+                    />
+                </button>
+            </div>
+
+            {/* Full-screen drawer */}
+            <AnimatePresence>
+                {open && (
+                    <motion.div
+                        className="mobile-nav-overlay sm:hidden"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                        {/* Top spacer - logo area */}
+                        <div style={{ height: 72, flexShrink: 0 }} />
+
+                        {/* Main links */}
+                        <nav style={{ flex: 1 }}>
+                            {NAV_LINKS.map(({ label, route, icon }, i) => (
+                                <motion.button
+                                    key={label}
+                                    className={`mobile-nav-link${pathname === route ? ' active' : ''}`}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.3, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                                    onClick={(e) => floodNavigate(route, e)}
+                                >
+                                    <span style={{
+                                        fontSize: 13,
+                                        color: pathname === route ? 'white' : 'rgba(255,255,255,0.3)',
+                                        width: 20, textAlign: 'center', flexShrink: 0,
+                                    }}>
+                                        {icon}
+                                    </span>
+                                    <span>{label}</span>
+                                    {pathname === route && (
+                                        <span style={{
+                                            marginLeft: 'auto',
+                                            fontSize: 10, padding: '2px 8px',
+                                            borderRadius: 999,
+                                            background: 'rgba(255,255,255,0.08)',
+                                            color: 'rgba(255,255,255,0.5)',
+                                        }}>
+                                            Current
+                                        </span>
+                                    )}
+                                </motion.button>
+                            ))}
+                        </nav>
+
+                        {/* Bottom - status */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                            style={{
+                                padding: '24px 28px 44px',
+                                borderTop: '1px solid rgba(255,255,255,0.06)',
+                                display: 'flex', alignItems: 'center', gap: 10,
+                            }}
+                        >
+                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 8px rgba(74,222,128,0.7)', flexShrink: 0 }} />
+                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontFamily: "'Inter', sans-serif", letterSpacing: '0.02em' }}>
+                                Available for work
+                            </span>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 }

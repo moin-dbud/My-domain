@@ -355,14 +355,19 @@ function SceneContent({ scene }) {
 }
 
 const ARC_R = 420, PIVOT_FROM_TOP = 520, CARD_W = 140, CARD_H = 210, AREA_H = 260;
+const ARC_R_M = 260, PIVOT_FROM_TOP_M = 320, CARD_W_M = 90, CARD_H_M = 135, AREA_H_M = 160;
 const IMAGE_LIST = ["image1", "image2", "image3", "image4", "image5", "image6", "image7", "image8", "image9", "image10"];
 const ARC_CARDS_DATA = [...IMAGE_LIST, ...IMAGE_LIST, ...IMAGE_LIST].map(
   (scene, i) => ({ baseAngle: (i - IMAGE_LIST.length) * 28, scene })
 );
 
-function ArcPhotoCard({ baseAngle, scene, rotation }) {
-  const x = useTransform(rotation, o => ARC_R * Math.sin(((baseAngle + o) * Math.PI) / 180));
-  const y = useTransform(rotation, o => PIVOT_FROM_TOP - ARC_R * Math.cos(((baseAngle + o) * Math.PI) / 180) - CARD_H / 2);
+function ArcPhotoCard({ baseAngle, scene, rotation, mobile = false }) {
+  const R = mobile ? ARC_R_M : ARC_R;
+  const PIVOT = mobile ? PIVOT_FROM_TOP_M : PIVOT_FROM_TOP;
+  const CW = mobile ? CARD_W_M : CARD_W;
+  const CH = mobile ? CARD_H_M : CARD_H;
+  const x = useTransform(rotation, o => R * Math.sin(((baseAngle + o) * Math.PI) / 180));
+  const y = useTransform(rotation, o => PIVOT - R * Math.cos(((baseAngle + o) * Math.PI) / 180) - CH / 2);
   const rotate = useTransform(rotation, o => baseAngle + o);
   const opacity = useTransform(rotation, o => {
     const a = Math.abs(baseAngle + o);
@@ -372,9 +377,9 @@ function ArcPhotoCard({ baseAngle, scene, rotation }) {
   const zIndex = useTransform(rotation, o => Math.max(1, Math.round(20 - Math.abs(baseAngle + o) / 5)));
   return (
     <motion.div style={{
-      position: "absolute", left: "50%", top: 0, marginLeft: -CARD_W / 2,
+      position: "absolute", left: "50%", top: 0, marginLeft: -CW / 2,
       x, y, rotate, opacity, scale, zIndex,
-      width: CARD_W, height: CARD_H, borderRadius: 18, overflow: "hidden",
+      width: CW, height: CH, borderRadius: 18, overflow: "hidden",
       boxShadow: "0 14px 44px rgba(0,0,0,0.88), 0 4px 12px rgba(0,0,0,0.7)",
       border: "1px solid rgba(255,255,255,0.11)",
     }}>
@@ -383,20 +388,21 @@ function ArcPhotoCard({ baseAngle, scene, rotation }) {
   );
 }
 
-function PhotoCardsGroup() {
+function PhotoCardsGroup({ mobile = false }) {
   const { scrollY } = useScroll();
   const scrollRot = useTransform(scrollY, [0, 2000], [0, -120]);
   const smooth = useSpring(scrollRot, { stiffness: 60, damping: 20 });
   const drag = useMotionValue(0);
   const dragSpring = useSpring(drag, { stiffness: 120, damping: 18 });
   const rotation = useTransform([smooth, dragSpring], ([s, d]) => s + d);
+  const areaH = mobile ? AREA_H_M : AREA_H;
   return (
     <motion.div drag="x" dragMomentum dragElastic={0.25}
       dragConstraints={{ left: 0, right: 0 }}
       onDrag={(_, info) => drag.set(drag.get() + info.delta.x * 0.25)}
-      style={{ position: "relative", height: AREA_H, overflow: "visible", cursor: "grab" }}>
+      style={{ position: "relative", height: areaH, overflow: "visible", cursor: "grab" }}>
       {ARC_CARDS_DATA.map((c, i) => (
-        <ArcPhotoCard key={i} baseAngle={c.baseAngle} scene={c.scene} rotation={rotation} />
+        <ArcPhotoCard key={i} baseAngle={c.baseAngle} scene={c.scene} rotation={rotation} mobile={mobile} />
       ))}
     </motion.div>
   );
@@ -476,6 +482,14 @@ function PhoneMockupsGroup() {
   const sRightY = useSpring(rightY, { stiffness: 45, damping: 20 });
   const sRightRot = useSpring(rightRot, { stiffness: 45, damping: 20 });
 
+  /* Detect mobile for phone layout */
+  const [isMobile, setIsMobile] = React.useState(() => window.innerWidth < 640);
+  React.useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   return (
     <div style={{
       position: "absolute", bottom: -30, left: "50%",
@@ -483,12 +497,10 @@ function PhoneMockupsGroup() {
       display: "flex", alignItems: "flex-end", justifyContent: "center",
       zIndex: 5
     }}>
-      {/* Left – Landing */}
-      <PhoneLanding rotate={sLeftRot} x={-148} y={sLeftY} zIndex={1} delay={0.10} />
-      {/* Center – Dashboard */}
-      <PhoneDashboard rotate={sCenterRot} x={0} y={sCenterY} zIndex={3} delay={0.20} />
-      {/* Right – Portfolio */}
-      <PhonePortfolio rotate={sRightRot} x={152} y={sRightY} zIndex={2} delay={0.30} />
+      {/* On mobile: only center phone. On desktop: all three */}
+      {!isMobile && <PhoneLanding rotate={sLeftRot} x={-148} y={sLeftY} zIndex={1} delay={0.10} />}
+      <PhoneDashboard rotate={sCenterRot} x={isMobile ? 0 : 0} y={sCenterY} zIndex={3} delay={0.20} />
+      {!isMobile && <PhonePortfolio rotate={sRightRot} x={152} y={sRightY} zIndex={2} delay={0.30} />}
     </div>
   );
 }
@@ -893,10 +905,10 @@ const About = () => {
         <div className="grid grid-cols-1 sm:grid-cols-[1fr_2.2fr_1fr] gap-6 sm:gap-9 relative" style={{ zIndex: 10 }}>
 
           {/* LEFT: Intro card */}
-          <div className={`${cardBase} relative p-6 h-[500px] flex flex-col justify-between overflow-hidden`}>
+          <div className={`${cardBase} relative p-6 h-[440px] sm:h-[500px] flex flex-col justify-between overflow-hidden`}>
             <div className={vignette} />
             <div className="relative z-10">
-              <h2 className="text-3xl font-bold">
+              <h2 className="text-2xl sm:text-3xl font-bold">
                 Moin{" "}
                 <span className="italic font-light text-[#686868]"
                   style={{ letterSpacing: "-0.01em", fontFamily: "'Playfair Display',serif" }}>
@@ -910,7 +922,9 @@ const About = () => {
                 </svg>
                 Nagpur, IN • {timeStr}</p>
             </div>
-            <PhotoCardsGroup />
+            {/* Smaller arc wheel on mobile */}
+            <div className="hidden sm:block"><PhotoCardsGroup /></div>
+            <div className="sm:hidden"><PhotoCardsGroup mobile={true} /></div>
             <div className="flex justify-center gap-6 text-gray-400 relative z-10">
               {/* LinkedIn */}
               <a href="#" aria-label="LinkedIn"
@@ -1024,18 +1038,18 @@ const About = () => {
               </div>
             </div>
             <div className="relative z-10">
-              <h2 className="text-3xl font-bold leading-tight">
+              <h2 className="text-2xl sm:text-3xl font-bold leading-tight">
                 LET'S BUILD<br />SOMETHING<br />
                 <span className="italic font-light text-gray-400"
                   style={{ letterSpacing: "-0.01em", fontFamily: "'Playfair Display',serif" }}>
                   that actually works.
                 </span>
               </h2>
-              <div className="mt-8">
+              <div className="mt-6 sm:mt-8">
                 <button onClick={copyEmail}
-                  className="flex items-center gap-3 text-lg text-white hover:opacity-80 transition-opacity">
-                  <span className="text-white/70">⬢</span>
-                  <span className="italic text-xl" style={{ fontFamily: "'Playfair Display',serif" }}>
+                  className="flex items-center gap-3 text-white hover:opacity-80 transition-opacity w-full">
+                  <span className="text-white/70 flex-shrink-0">⬢</span>
+                  <span className="italic text-base sm:text-xl truncate" style={{ fontFamily: "'Playfair Display',serif" }}>
                     {email}
                   </span>
                 </button>
@@ -1063,16 +1077,23 @@ const About = () => {
 
           {/* ── BOTTOM LEFT: Available Globally ── */}
           <div className={`${cardBase} relative overflow-hidden`}
-            style={{ height: 520 }}>
+            style={{ minHeight: 380 }}>
             <div className={vignette} />
 
-            {/* Globe fills entire card — overflows bottom/left, interactive */}
-            <div style={{
+            {/* Globe fills entire card — smaller on mobile */}
+            <div className="hidden sm:block" style={{
               position: "absolute",
               bottom: -80, left: -80,
               zIndex: 3,
             }}>
               <DraggableGlobe size={480} activeCountry={activeCountry} />
+            </div>
+            <div className="sm:hidden" style={{
+              position: "absolute",
+              bottom: -40, left: -40,
+              zIndex: 3,
+            }}>
+              <DraggableGlobe size={300} activeCountry={activeCountry} />
             </div>
 
             {/* Text — top-left */}
@@ -1085,8 +1106,11 @@ const About = () => {
               </h3>
             </div>
 
-            {/* Chips — right side, vertically centered */}
-            <div className="absolute right-7 top-75 -translate-y-1/2 z-10 flex flex-col gap-3">
+            {/* Chips — right side, below text on mobile */}
+            <div className="hidden sm:flex" style={{
+              position: "absolute", right: 7, top: 180, zIndex: 10,
+              flexDirection: 'column', gap: 3,
+            }}>
               {TZ_CHIPS.map(({ code, name }) => (
                 <TzChip
                   key={code}
@@ -1095,6 +1119,28 @@ const About = () => {
                   isActive={activeCountry === code}
                   onClick={() => setActiveCountry(code)}
                 />
+              ))}
+            </div>
+
+            {/* Mobile TZ chips — simple row below text */}
+            <div className="flex sm:hidden" style={{
+              position: "absolute", top: 90, left: 16, right: 16,
+              zIndex: 10, gap: 6, flexWrap: 'wrap',
+            }}>
+              {TZ_CHIPS.map(({ code, name }) => (
+                <button
+                  key={code}
+                  onClick={() => setActiveCountry(code)}
+                  style={{
+                    padding: '6px 12px', borderRadius: 999, fontSize: 12,
+                    background: activeCountry === code ? 'rgba(135,82,8,0.48)' : 'rgba(255,255,255,0.06)',
+                    border: activeCountry === code ? '1px solid rgba(196,130,28,0.6)' : '1px solid rgba(255,255,255,0.1)',
+                    color: activeCountry === code ? 'rgba(245,185,55,0.95)' : 'rgba(255,255,255,0.5)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {code} {name}
+                </button>
               ))}
             </div>
 
@@ -1117,7 +1163,7 @@ const About = () => {
           {/* ── BOTTOM RIGHT: Founder of MadeIt ── */}
           <div className={`${cardBase} relative overflow-hidden`}
             style={{
-              height: 520,
+              minHeight: 380,
               background: "#080808",
               borderColor: "rgba(255,255,255,0.08)"
             }}>

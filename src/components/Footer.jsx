@@ -102,6 +102,12 @@ const footerStyles = `
     .footer-ring-wrap {
       display: none !important;
     }
+    .footer-card-inner {
+      padding: 28px 20px !important;
+    }
+    .footer-outer {
+      padding: 48px 16px 32px !important;
+    }
   }
 `;
 
@@ -253,14 +259,15 @@ export default function Footer() {
                 ref={ref}
                 id="footer"
                 style={{
-                    background: '#000',
-                    width: '100%',
-                    padding: '80px 28px 40px',
-                    fontFamily: "'Inter', sans-serif",
-                    boxSizing: 'border-box',
-                    position: 'relative',
-                    overflow: 'hidden',
-                }}
+                            background: '#000',
+                            width: '100%',
+                            padding: '80px 28px 40px',
+                            fontFamily: "'Inter', sans-serif",
+                            boxSizing: 'border-box',
+                            position: 'relative',
+                            overflow: 'hidden',
+                        }}
+                        className="footer-outer"
             >
                 {/* ── Ambient background glow ── */}
                 <div style={{
@@ -375,6 +382,7 @@ export default function Footer() {
                         initial={{ opacity: 0, y: 36 }}
                         animate={inView ? { opacity: 1, y: 0 } : {}}
                         transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                        className="footer-card-inner"
                         style={{
                             background: '#0a0a0a',
                             border: '1px solid rgba(255,255,255,0.08)',

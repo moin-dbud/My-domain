@@ -49,7 +49,7 @@ export default function PageHero({ title, subtitle, highlight }) {
                 width: '100%',
                 minHeight: '75vh',
                 display: 'flex',
-                paddingTop: '10vw',
+                paddingTop: 'clamp(80px, 14vw, 10vw)',
                 paddingBottom: '8vw',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -116,7 +116,7 @@ export default function PageHero({ title, subtitle, highlight }) {
                 <div className="flex flex-col items-center mt-2 gap-2">
                     <p
                         className="tagline-caps-anim text-gray-400 uppercase text-center"
-                        style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(6px, 2vw, 17px)', letterSpacing: '0.38em', fontWeight: 300 }}
+                        style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(11px, 2vw, 17px)', letterSpacing: '0.38em', fontWeight: 300 }}
                     >
                         {subtitle}
                     </p>

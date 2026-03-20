@@ -1,10 +1,9 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useFloodNavigate } from '../components/PageTransition';
 import PageHero from '../components/PageHero';
 import Footer from '../components/Footer';
-import { BLOGS } from '../data/blogs';
+import { supabase } from '../lib/supabase';
 
 /* ─── Tag colour map ─────────────────────────────────────────── */
 const TAG_COLORS = {
@@ -21,7 +20,6 @@ function BlogCard({ blog, index }) {
     const { floodNavigate } = useFloodNavigate();
     const tag = TAG_COLORS[blog.tag] ?? defaultTag;
     
-
     return (
         <motion.article
             initial={{ opacity: 0, y: 24 }}
@@ -69,7 +67,7 @@ function BlogCard({ blog, index }) {
                 e.currentTarget.style.boxShadow = 'none';
             }}
         >
-            {/* Subtle top gradient line on hover */}
+            {/* Subtle top gradient line */}
             <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0,
                 height: 1,
@@ -82,10 +80,8 @@ function BlogCard({ blog, index }) {
                     fontSize: 12, color: 'rgba(255,255,255,0.3)',
                     letterSpacing: '0.03em', fontWeight: 400,
                 }}>
-                    {blog.date} &nbsp;·&nbsp; {blog.readingTime}
+                    {blog.date} &nbsp;·&nbsp; {blog.reading_time}
                 </span>
-
-                {/* Tag badge */}
                 <span style={{
                     fontSize: 11, fontWeight: 500,
                     letterSpacing: '0.06em', textTransform: 'uppercase',
@@ -136,10 +132,9 @@ function BlogCard({ blog, index }) {
                 fontSize: 12, fontWeight: 500,
                 letterSpacing: '0.06em', textTransform: 'uppercase',
                 color: 'rgba(255,255,255,0.25)',
-                transition: 'color 0.2s',
             }}>
                 Read article
-                <span style={{ fontSize: 14, transition: 'transform 0.2s' }}>→</span>
+                <span style={{ fontSize: 14 }}>→</span>
             </div>
         </motion.article>
     );
@@ -147,8 +142,20 @@ function BlogCard({ blog, index }) {
 
 /* ─── Blogs Page ─────────────────────────────────────────────── */
 export default function Blogs() {
+    const [blogs, setBlogs] = useState([]);
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
         document.title = 'Blogs | Moin Sheikh';
+        supabase
+            .from('blogs')
+            .select('*')
+            .eq('is_published', true)
+            .order('sort_order')
+            .then(({ data }) => {
+                if (data) setBlogs(data);
+                setLoading(false);
+            });
     }, []);
 
     return (
@@ -159,57 +166,33 @@ export default function Blogs() {
                 highlight="AI systems & products."
             />
 
-            {/* ── Grid section ── */}
-            <section style={{
-                maxWidth: 1160,
-                margin: '0 auto',
-                padding: '0 24px 120px',
-            }}>
+            <section style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px 120px' }}>
 
-                {/* Section label */}
                 <motion.p
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                     style={{
-                        fontSize: 11, fontWeight: 500,
-                        letterSpacing: '0.26em', textTransform: 'uppercase',
-                        color: 'rgba(255,255,255,0.24)',
+                        fontSize: 11, fontWeight: 500, letterSpacing: '0.26em',
+                        textTransform: 'uppercase', color: 'rgba(255,255,255,0.24)',
                         margin: '0 0 36px 0',
                     }}
                 >
-                    {BLOGS.length} articles
+                    {loading ? '—' : blogs.length} articles
                 </motion.p>
 
-                {/* Responsive grid */}
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
-                    gap: 20,
-                }}>
-                    <style>{`
-                        @media (max-width: 1024px) {
-                            .blogs-grid { grid-template-columns: repeat(2, 1fr) !important; }
-                        }
-                        @media (max-width: 640px) {
-                            .blogs-grid { grid-template-columns: 1fr !important; }
-                        }
-                    `}</style>
+                <style>{`
+                    @media (max-width: 1024px) { .blogs-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+                    @media (max-width: 640px)  { .blogs-grid { grid-template-columns: 1fr !important; } }
+                    @keyframes shimmer { from { background-position:-200% 0; } to { background-position:200% 0; } }
+                    .blog-skeleton { height:260px; border-radius:18px; background:linear-gradient(90deg,#111 25%,#1a1a1a 50%,#111 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
+                `}</style>
 
-                    <div
-                        className="blogs-grid"
-                        style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(3, 1fr)',
-                            gap: 20,
-                            width: '100%',
-                            gridColumn: '1 / -1',
-                        }}
-                    >
-                        {BLOGS.map((blog, i) => (
-                            <BlogCard key={blog.slug} blog={blog} index={i} />
-                        ))}
-                    </div>
+                <div className="blogs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+                    {loading
+                        ? [1,2,3,4,5,6].map(i => <div key={i} className="blog-skeleton" />)
+                        : blogs.map((blog, i) => <BlogCard key={blog.slug || blog.id} blog={blog} index={i} />)
+                    }
                 </div>
             </section>
 

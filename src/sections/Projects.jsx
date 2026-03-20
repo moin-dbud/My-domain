@@ -1,124 +1,78 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 
-/* ─── Project Data ──────────────────────────────────────────────────────── */
-const PROJECTS = [
+/* ─── Static fallback data (used if Supabase is unavailable) ──────────── */
+const FALLBACK_PROJECTS = [
     {
-        id: 0,
-        title: 'MadeIt',
-        category: 'Product Platform',
-        color: '#f97316', /* orange */
-        description:
-            'MadeIt is a milestone-driven learning platform designed to help students finish real projects instead of passively consuming tutorials. It guides users through structured project roadmaps, tracks their progress, and automatically converts completed work into a proof-of-work developer portfolio that can be shared with recruiters.',
-        features: [
-            'Milestone-based project execution system',
-            'Progress tracking dashboard with analytics',
-            'Automated proof-of-work portfolio generation',
-            'Structured project roadmap with task management',
-            'Developer productivity workflow',
-            'Real-time learning progress insights',
-        ],
-        tech: [
-            { label: 'React', icon: '⚛' },
-            { label: 'Next.js', icon: '▲' },
-            { label: 'Node.js', icon: '🟢' },
-            { label: 'Express.js', icon: '⚡' },
-            { label: 'MongoDB', icon: '�' },
-            { label: 'Tailwind CSS', icon: '🎨' },
-            { label: 'Framer Motion', icon: '◈' },
-            { label: 'JWT Auth', icon: '' },
-            { label: 'Vercel', icon: '▲' },
-        ],
+        id: 0, title: 'MadeIt', category: 'Product Platform', color: '#f97316',
+        description: 'MadeIt is a milestone-driven learning platform designed to help students finish real projects instead of passively consuming tutorials.',
+        features: ['Milestone-based project execution system','Progress tracking dashboard with analytics','Automated proof-of-work portfolio generation'],
+        tech: [{ label: 'React', icon: '⚛' },{ label: 'Next.js', icon: '▲' },{ label: 'Node.js', icon: '🟢' }],
         desktop: { bg: '#0f0a04', accent: '#f97316' },
         mobile: { bg: '#130c03', accent: '#f97316', label: 'My Projects' },
         images: { desktop: '/desktop-madeit.webp', mobile: '/mobile-madeit.webp' },
     },
     {
-        id: 1,
-        title: 'Nexora Learn AI',
-        category: 'AI Education Platform',
-        color: '#a855f7', /* purple */
-        description:
-            'Nexora Learn AI is an intelligent study planning platform designed for college students preparing for exams. It combines rule-based scheduling algorithms with AI-powered insights to generate personalized study plans based on subjects, available time, and exam deadlines.',
-        features: [
-            'AI-powered personalized study planning',
-            'Rule-based scheduling algorithm for time optimization',
-            'Smart task prioritization based on exam deadlines',
-            'Adaptive study plan adjustments',
-            'Progress tracking dashboard',
-            'AI-driven learning insights and recommendations',
-        ],
-        tech: [
-            { label: 'Python', icon: '🐍' },
-            { label: 'FastAPI', icon: '⚡' },
-            { label: 'OpenAI API', icon: '🤖' },
-            { label: 'React', icon: '⚛' },
-            { label: 'Next.js', icon: '▲' },
-            { label: 'MongoDB', icon: '🍃' },
-            { label: 'Tailwind CSS', icon: '🎨' },
-            { label: 'REST APIs', icon: '🔗' },
-        ],
+        id: 1, title: 'Nexora Learn AI', category: 'AI Education Platform', color: '#a855f7',
+        description: 'Nexora Learn AI is an intelligent study planning platform designed for college students preparing for exams.',
+        features: ['AI-powered personalized study planning','Rule-based scheduling algorithm','Smart task prioritization'],
+        tech: [{ label: 'Python', icon: '🐍' },{ label: 'FastAPI', icon: '⚡' },{ label: 'OpenAI API', icon: '🤖' }],
         desktop: { bg: '#0d0814', accent: '#a855f7' },
         mobile: { bg: '#120a1a', accent: '#a855f7', label: 'Study Plan' },
         images: { desktop: '/desktop-nexora.webp', mobile: '/mobile-nexora.webp' },
     },
     {
-        id: 2,
-        title: 'LevelUp.dev',
-        category: 'EdTech Platform',
-        color: '#38bdf8', /* sky blue */
-        description:
-            'LevelUp.dev is a full-stack online learning platform where students can browse, enroll in, and complete structured development courses. The platform provides interactive learning modules, progress tracking, and a powerful admin dashboard for managing courses and student engagement.',
-        features: [
-            'Course discovery and enrollment system',
-            'Structured learning modules and lessons',
-            'Student progress tracking',
-            'Interactive lesson interface',
-            'Admin dashboard for course management',
-            'Secure authentication with role-based access',
-        ],
-        tech: [
-            { label: 'React', icon: '⚛' },
-            { label: 'Node.js', icon: '🟢' },
-            { label: 'Express.js', icon: '⚡' },
-            { label: 'MongoDB', icon: '🍃' },
-            { label: 'JWT Auth', icon: '🔐' },
-            { label: 'Redux', icon: '🔄' },
-            { label: 'Tailwind CSS', icon: '🎨' },
-            { label: 'Cloudinary', icon: '☁' },
-        ],
+        id: 2, title: 'LevelUp.dev', category: 'EdTech Platform', color: '#38bdf8',
+        description: 'LevelUp.dev is a full-stack online learning platform where students can browse, enroll in, and complete structured development courses.',
+        features: ['Course discovery and enrollment system','Structured learning modules','Student progress tracking'],
+        tech: [{ label: 'React', icon: '⚛' },{ label: 'Node.js', icon: '🟢' },{ label: 'MongoDB', icon: '🍃' }],
         desktop: { bg: '#03111a', accent: '#38bdf8' },
         mobile: { bg: '#051520', accent: '#38bdf8', label: 'My Courses' },
         images: { desktop: '/desktop-levelup.webp', mobile: '/mobile-levelup.webp' },
     },
     {
-        id: 3,
-        title: 'AI Resume Analyzer',
-        category: 'AI Tool',
-        color: '#e2e8f0', /* soft white */
-        description:
-            'An AI-powered tool that analyzes resumes and provides actionable insights to improve job readiness. The system evaluates resumes against job descriptions and gives feedback on structure, keywords, and overall match quality.',
-        features: [
-            'Resume analysis against job descriptions',
-            'Keyword optimization suggestions',
-            'Structure and formatting feedback',
-            'Overall match quality scoring',
-            'Actionable improvement recommendations',
-        ],
-        tech: [
-            { label: 'React', icon: '⚛' },
-            { label: 'Node.js', icon: '🟢' },
-            { label: 'Express.js', icon: '⚡' },
-            { label: 'MongoDB', icon: '🍃' },
-            { label: 'Tailwind CSS', icon: '🎨' },
-            { label: 'OpenAI API', icon: '🤖' },
-            { label: 'REST APIs', icon: '🔗' },
-        ],
+        id: 3, title: 'AI Resume Analyzer', category: 'AI Tool', color: '#e2e8f0',
+        description: 'An AI-powered tool that analyzes resumes and provides actionable insights to improve job readiness.',
+        features: ['Resume analysis against job descriptions','Keyword optimization suggestions','Structure and formatting feedback'],
+        tech: [{ label: 'React', icon: '⚛' },{ label: 'OpenAI API', icon: '🤖' },{ label: 'Node.js', icon: '🟢' }],
         desktop: { bg: '#0a0a0a', accent: '#94a3b8' },
         mobile: { bg: '#111', accent: '#94a3b8', label: 'Analyze Resume' },
         images: { desktop: '/desktop-resume.webp', mobile: '/mobile-resume.webp' },
     },
 ];
+
+/* Map Supabase row → component's expected shape */
+function mapRow(row) {
+    return {
+        id: row.id,
+        title: row.title,
+        category: row.category || '',
+        color: row.color || '#a855f7',
+        description: row.description || '',
+        features: Array.isArray(row.features) ? row.features : [],
+        tech: Array.isArray(row.tech) ? row.tech : [],
+        desktop: { bg: row.desktop_bg || '#0a0a0a', accent: row.desktop_accent || row.color || '#a855f7' },
+        mobile: { bg: row.mobile_bg || '#0a0a0a', accent: row.mobile_accent || row.color || '#a855f7', label: row.mobile_label || '' },
+        images: { desktop: row.image_desktop || '', mobile: row.image_mobile || '' },
+    };
+}
+
+/* ─── Projects hook ─────────────────────────────────────────────────────── */
+function useProjects() {
+    const [PROJECTS, setProjects] = useState(FALLBACK_PROJECTS);
+    useEffect(() => {
+        supabase
+            .from('projects')
+            .select('*')
+            .eq('is_visible', true)
+            .order('sort_order')
+            .then(({ data }) => {
+                if (data && data.length > 0) setProjects(data.map(mapRow));
+            });
+    }, []);
+    return PROJECTS;
+}
 
 /* ─── Injected CSS ──────────────────────────────────────────────────────── */
 const injectStyles = `
@@ -143,6 +97,28 @@ const injectStyles = `
   .vs-pill:hover {
     background: rgba(255,255,255,0.09);
     border-color: rgba(255,255,255,0.22);
+  }
+
+  /* Mobile project cards */
+  .mobile-project-card {
+    background: #0a0a0a;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 28px 24px;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .mobile-project-card:hover {
+    border-color: rgba(255,255,255,0.15);
+    background: #111;
+  }
+
+  @media (max-width: 639px) {
+    .projects-sticky-section { display: none !important; }
+    .projects-mobile-section { display: block !important; }
+  }
+  @media (min-width: 640px) {
+    .projects-sticky-section { display: block !important; }
+    .projects-mobile-section { display: none !important; }
   }
 `;
 
@@ -339,10 +315,10 @@ function TechPill({ icon, label }) {
 }
 
 /* ─── Center Timeline ───────────────────────────────────────────────────── */
-function Timeline({ activeIndex, total, scrollProgress }) {
+function Timeline({ activeIndex, total, scrollProgress, projects }) {
     const y = useTransform(scrollProgress, [0, 1], [0, 252]);
     const sy = useSpring(y, { stiffness: 55, damping: 22 });
-    const activeColor = PROJECTS[activeIndex]?.color ?? '#a855f7';
+    const activeColor = projects[activeIndex]?.color ?? '#a855f7';
 
     return (
         <div style={{
@@ -410,11 +386,11 @@ function Timeline({ activeIndex, total, scrollProgress }) {
                         width: activeIndex === i ? 10 : 7,
                         height: activeIndex === i ? 10 : 7,
                         borderRadius: '50%',
-                        background: activeIndex === i ? PROJECTS[i].color : 'rgba(255,255,255,0.18)',
+                        background: activeIndex === i ? projects[i].color : 'rgba(255,255,255,0.18)',
                         border: activeIndex === i
-                            ? `2px solid ${PROJECTS[i].color}`
+                            ? `2px solid ${projects[i].color}`
                             : '1.5px solid rgba(255,255,255,0.1)',
-                        boxShadow: activeIndex === i ? `0 0 8px 2px ${PROJECTS[i].color}99` : 'none',
+                        boxShadow: activeIndex === i ? `0 0 8px 2px ${projects[i].color}99` : 'none',
                         transition: 'all 0.35s ease',
                         zIndex: 3,
                     }} />
@@ -426,6 +402,7 @@ function Timeline({ activeIndex, total, scrollProgress }) {
 
 /* ─── Main Section ──────────────────────────────────────────────────────── */
 export default function Projects() {
+    const PROJECTS = useProjects();
     const wrapperRef = useRef(null);
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -446,7 +423,7 @@ export default function Projects() {
             setActiveIndex(Math.min(PROJECTS.length - 1, Math.max(0, idx)));
         });
         return unsub;
-    }, [scrollYProgress]);
+    }, [scrollYProgress, PROJECTS.length]);
 
     const project = PROJECTS[activeIndex];
 
@@ -454,8 +431,100 @@ export default function Projects() {
         <>
             <style>{injectStyles}</style>
 
+            {/* ───────── MOBILE: Simple vertical cards ───────── */}
+            <div
+                className="projects-mobile-section"
+                style={{
+                    display: 'none',
+                    background: '#000',
+                    padding: '60px 16px 80px',
+                    fontFamily: "'Inter',sans-serif",
+                }}
+            >
+                {/* Section header */}
+                <div style={{ textAlign: 'center', marginBottom: 48 }}>
+                    <p style={{
+                        fontSize: 11, letterSpacing: '0.28em',
+                        color: 'rgba(255,255,255,0.3)',
+                        textTransform: 'uppercase', fontWeight: 500, marginBottom: 12,
+                    }}>
+                        Crafting Modern Experiences
+                    </p>
+                    <h2 style={{
+                        fontSize: 'clamp(32px, 10vw, 56px)',
+                        fontWeight: 900, letterSpacing: '-0.03em',
+                        lineHeight: 1, margin: 0,
+                    }}>
+                        <span style={{ color: 'white' }}>VENTURE </span>
+                        <span style={{
+                            fontStyle: 'italic',
+                            background: 'linear-gradient(90deg,#6366f1 0%,#a855f7 50%,#ec4899 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            fontFamily: "'Playfair Display',serif",
+                        }}>SHOWCASE</span>
+                    </h2>
+                </div>
+
+                {/* Project cards */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                    {PROJECTS.map((project, i) => (
+                        <motion.div
+                            key={project.id}
+                            className="mobile-project-card"
+                            initial={{ opacity: 0, y: 24 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: '-40px' }}
+                            transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                            {/* Category + number */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 500 }}>
+                                    {project.category}
+                                </span>
+                                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', letterSpacing: '0.12em' }}>
+                                    {String(i + 1).padStart(2, '0')} / {String(PROJECTS.length).padStart(2, '0')}
+                                </span>
+                            </div>
+
+                            {/* Color line + title */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                                <div style={{ width: 18, height: 2.5, background: project.color, borderRadius: 2, flexShrink: 0 }} />
+                                <h3 style={{ fontSize: 22, fontWeight: 800, color: 'white', letterSpacing: '-0.02em', margin: 0 }}>
+                                    {project.title}
+                                </h3>
+                            </div>
+
+                            {/* Description */}
+                            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.42)', lineHeight: 1.75, marginBottom: 18 }}>
+                                {project.description}
+                            </p>
+
+                            {/* Features */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 18 }}>
+                                {project.features.map((feat, fi) => (
+                                    <div key={fi} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                                        <SparkIcon color={project.color} />
+                                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.55 }}>{feat}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Tech pills */}
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                                {project.tech.map(({ label, icon }) => (
+                                    <TechPill key={label} icon={icon} label={label} />
+                                ))}
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+
+            {/* ───────── DESKTOP: Sticky scroll showcase ───────── */}
             {/* Tall wrapper — each project gets 100vh of scroll travel */}
             <div
+                className="projects-sticky-section"
                 ref={wrapperRef}
                 style={{ height: `${(PROJECTS.length + 1) * 100}vh`, position: 'relative' }}
             >
@@ -602,6 +671,7 @@ export default function Projects() {
                                 activeIndex={activeIndex}
                                 total={PROJECTS.length}
                                 scrollProgress={scrollYProgress}
+                                projects={PROJECTS}
                             />
                         </div>
 

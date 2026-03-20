@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+
 
 /* ─── Injected styles (hero-only animations) ─────────────── */
 const heroStyles = `
@@ -27,7 +26,6 @@ const heroStyles = `
 
 /* ─── Hero section ────────────────────────────────────────── */
 export default function Hero() {
-    const [dark, setDark] = useState(true);
 
     return (
         <>
@@ -38,95 +36,34 @@ export default function Hero() {
                 style={{ fontFamily: "'Inter', sans-serif" }}
                 className="w-full h-screen bg-black flex flex-col"
             >
-                {/* ── MOBILE NAVBAR PILL (visible only on mobile, sm:hidden) ── */}
-                <div className="flex sm:hidden justify-center pt-4 px-4 shrink-0 z-50">
-                    <div
-                        className="flex items-center gap-0 rounded-full px-1 py-1"
-                        style={{
-                            border: '1px solid rgba(255,255,255,0.12)',
-                            background: 'rgba(12,12,12,0.85)',
-                            backdropFilter: 'blur(18px)',
-                            WebkitBackdropFilter: 'blur(18px)',
-                        }}
-                    >
-                        {/* Initials */}
-                        <span
-                            className="text-white font-semibold px-3"
-                            style={{
-                                fontSize: '15px',
-                                fontFamily: "'Playfair Display', serif",
-                                fontStyle: 'italic',
-                                letterSpacing: '-0.01em',
-                            }}
-                        >
-                            MS
-                        </span>
-
-                        {/* Divider */}
-                        <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.18)', flexShrink: 0 }} />
-
-                        {/* Full name */}
-                        <span
-                            className="text-white px-3"
-                            style={{ fontSize: '14px', fontWeight: 500, letterSpacing: '-0.01em' }}
-                        >
-                            Moin Sheikh
-                        </span>
-
-                        {/* Theme toggle */}
-                        <button
-                            onClick={() => setDark(d => !d)}
-                            className="flex items-center justify-center rounded-full text-white"
-                            style={{
-                                width: '34px', height: '34px', flexShrink: 0,
-                                background: 'rgba(255,255,255,0.08)',
-                            }}
-                            aria-label="Toggle theme"
-                        >
-                            {dark ? (
-                                /* Moon icon */
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                                </svg>
-                            ) : (
-                                /* Sun icon */
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="5" />
-                                    <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
-                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                                    <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
-                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                                </svg>
-                            )}
-                        </button>
-                    </div>
-                </div>
+                {/* ── Mobile nav spacer — keeps hero content below the fixed hamburger bar ── */}
+                <div className="sm:hidden" style={{ height: 64, flexShrink: 0 }} />
 
                 {/* ── HERO CONTENT ── */}
-                <div className="flex-1 flex flex-col items-center justify-center" style={{ marginTop: '-3rem' }}>
+                <div className="flex-1 flex flex-col items-center justify-center" style={{ marginTop: '-2rem' }}>
 
                     <h1
                         className="moin-anim text-white select-none leading-none"
                         style={{
                             fontFamily: "'Montserrat', sans-serif",
                             fontWeight: 900,
-                            fontSize: 'clamp(72px, 15vw, 280px)',
+                            fontSize: 'clamp(64px, 15vw, 280px)',
                             letterSpacing: '-0.02em',
                         }}
                     >
                         MOIN
                     </h1>
 
-                    <div className="flex flex-col items-center mt-2 gap-2">
+                    <div className="flex flex-col items-center mt-2 gap-2 px-4">
                         <p
                             className="tagline-caps-anim text-gray-400 uppercase text-center"
-                            style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(6px, 2vw, 17px)', letterSpacing: '0.38em', fontWeight: 300 }}
+                            style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(9px, 2vw, 17px)', letterSpacing: '0.28em', fontWeight: 300 }}
                         >
                             I DESIGN AND BUILD PRODUCTS THAT
                         </p>
                         <p
                             className="tagline-serif-anim text-white text-center"
-                            style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 'clamp(26px, 4.2vw, 62px)', letterSpacing: '-0.01em', fontWeight: 400 }}
+                            style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 'clamp(22px, 4.2vw, 62px)', letterSpacing: '-0.01em', fontWeight: 400 }}
                         >
                             deliver real impact.
                         </p>

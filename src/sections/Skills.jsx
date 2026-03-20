@@ -1,5 +1,6 @@
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { useRef, useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 
 /* ─── Skills Data ───────────────────────────────────────────── */
 const SKILLS = [
@@ -107,9 +108,33 @@ function SkillPill({ skill, index }) {
     );
 }
 
+/* ─── Fallback skills (used before Supabase loads) ──────────── */
+const SKILLS_FALLBACK = [
+    { id: 0, name: 'React', color: '#61DAFB', sym: '⚛' },
+    { id: 1, name: 'Next.js', color: '#e5e5e5', sym: '▲' },
+    { id: 2, name: 'TypeScript', color: '#3178C6', sym: 'TS' },
+    { id: 3, name: 'JavaScript', color: '#F7DF1E', sym: 'JS' },
+    { id: 4, name: 'Python', color: '#3776AB', sym: '🐍' },
+    { id: 5, name: 'Node.js', color: '#339933', sym: '⬡' },
+    { id: 6, name: 'OpenAI API', color: '#10a37f', sym: '◎' },
+    { id: 7, name: 'MongoDB', color: '#47A248', sym: '🍃' },
+];
+
 /* ─── Main Skills Section ────────────────────────────────────── */
 export default function Skills() {
     const sectionRef = useRef(null);
+    const [SKILLS, setSkills] = useState(SKILLS_FALLBACK);
+
+    useEffect(() => {
+        supabase
+            .from('skills')
+            .select('*')
+            .eq('is_visible', true)
+            .order('sort_order')
+            .then(({ data }) => {
+                if (data && data.length > 0) setSkills(data);
+            });
+    }, []);
 
     return (
         <section
@@ -117,7 +142,7 @@ export default function Skills() {
             style={{
                 background: '#000',
                 width: '100%',
-                padding: '80px 24px 60px',
+                padding: 'clamp(48px, 8vw, 80px) 24px 60px',
                 position: 'relative',
                 overflow: 'hidden',
                 fontFamily: "'Inter',sans-serif",
