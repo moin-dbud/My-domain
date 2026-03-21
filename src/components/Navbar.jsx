@@ -566,11 +566,10 @@ function MobileNav() {
         <>
             {/* Mobile top bar */}
             <div
-                className="sm:hidden"
+                className="sm:hidden flex items-center justify-between"
                 style={{
                     position: 'fixed', top: 0, left: 0, right: 0,
                     zIndex: 210,
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '12px 20px',
                     background: open ? 'transparent' : 'rgba(0,0,0,0.0)',
                     transition: 'background 0.3s',
