@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFloodNavigate } from '../components/PageTransition';
 
@@ -6,17 +6,20 @@ import { useFloodNavigate } from '../components/PageTransition';
 const IMAGES = ['/image2.webp', '/image3.webp', '/image10.webp'];
 
 /* Card position configs: index 0 = front, 1 = back-left, 2 = back-right */
-const POSITIONS = [
-    { x: 0, rotate: 0, scale: 1.0, zIndex: 3, opacity: 1 },
-    { x: -72, rotate: -11, scale: 0.87, zIndex: 2, opacity: 0.82 },
-    { x: 72, rotate: 11, scale: 0.87, zIndex: 1, opacity: 0.68 },
-];
+function getPositions(xOffset) {
+    return [
+        { x: 0,        rotate: 0,   scale: 1.0,  zIndex: 3, opacity: 1    },
+        { x: -xOffset, rotate: -11, scale: 0.87, zIndex: 2, opacity: 0.82 },
+        { x:  xOffset, rotate:  11, scale: 0.87, zIndex: 1, opacity: 0.68 },
+    ];
+}
 
 /* ─── Stacked Image Card Rotator ──────────────────────────────── */
-function ImageStack() {
+function ImageStack({ cardWidth = 260, cardHeight = 360, xOffset = 72 }) {
     /* frontIndex tells us which image is currently at position 0 (front) */
     const [frontIdx, setFrontIdx] = useState(0);
     const [hovered, setHovered] = useState(false);
+    const positions = useMemo(() => getPositions(xOffset), [xOffset]);
 
     useEffect(() => {
         const id = setInterval(() => setFrontIdx(f => (f + 1) % 3), 3000);
@@ -28,7 +31,7 @@ function ImageStack() {
         <div
             style={{
                 position: 'relative',
-                width: 260, height: 360,
+                width: cardWidth, height: cardHeight,
                 flexShrink: 0,
             }}
             onMouseEnter={() => setHovered(true)}
@@ -37,7 +40,7 @@ function ImageStack() {
             {IMAGES.map((src, imgIdx) => {
                 /* Which position slot does this image occupy? */
                 const posIdx = (imgIdx - frontIdx + 3) % 3;
-                const pos = POSITIONS[posIdx];
+                const pos = positions[posIdx];
                 const isFront = posIdx === 0;
 
                 return (
@@ -59,8 +62,8 @@ function ImageStack() {
                         style={{
                             position: 'absolute',
                             top: 0, left: 0,
-                            width: 260, height: 360,
-                            borderRadius: 20,
+                            width: cardWidth, height: cardHeight,
+                            borderRadius: 16,
                             overflow: 'hidden',
                             cursor: 'pointer',
                             boxShadow: isFront
@@ -84,7 +87,7 @@ function ImageStack() {
                         {/* Subtle inner border shine */}
                         <div style={{
                             position: 'absolute', inset: 0,
-                            borderRadius: 20,
+                            borderRadius: 16,
                             border: '1px solid rgba(255,255,255,0.10)',
                             pointerEvents: 'none',
                         }} />
@@ -109,7 +112,7 @@ function SocialLinks() {
         },
         {
             label: 'LinkedIn',
-            href: 'https://linkedin.com/moin-s-sheikh',
+            href: 'https://linkedin.com/moin-build',
             icon: (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
@@ -161,6 +164,12 @@ function SocialLinks() {
 /* ─── Main Glace Section ──────────────────────────────────────── */
 export default function Glace({ label, headline, highlight, description, final }) {
     const { floodNavigate } = useFloodNavigate();
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
     return (
         <section style={{
             background: '#000',
@@ -185,7 +194,7 @@ export default function Glace({ label, headline, highlight, description, final }
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
-                    gap: 80,
+                    gap: isMobile ? 48 : 80,
                     maxWidth: 1200,
                     margin: '0 auto',
                 }}
@@ -317,11 +326,16 @@ export default function Glace({ label, headline, highlight, description, final }
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        /* Extra horizontal padding so rotated back-cards don't clip */
-                        paddingLeft: 80, paddingRight: 80,
+                        /* Padding gives room for rotated back-cards; reduced on mobile */
+                        paddingLeft:  isMobile ? 36 : 80,
+                        paddingRight: isMobile ? 36 : 80,
                     }}
                 >
-                    <ImageStack />
+                    <ImageStack
+                        cardWidth={isMobile ? 170 : 260}
+                        cardHeight={isMobile ? 240 : 360}
+                        xOffset={isMobile ? 44 : 72}
+                    />
                 </motion.div>
             </div>
         </section>
