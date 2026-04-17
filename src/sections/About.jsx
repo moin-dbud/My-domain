@@ -927,7 +927,7 @@ const About = () => {
             <div className="sm:hidden"><PhotoCardsGroup mobile={true} /></div>
             <div className="flex justify-center gap-6 text-gray-400 relative z-10">
               {/* LinkedIn */}
-              <a href="#" aria-label="LinkedIn"
+              <a href="https://www.linkedin.com/in/moin-build/" aria-label="LinkedIn"
                 className="hover:text-white transition-colors"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)' }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
@@ -937,7 +937,7 @@ const About = () => {
                 </svg>
               </a>
               {/* GitHub */}
-              <a href="#" aria-label="GitHub"
+              <a href="https://github.com/moin-dbud" aria-label="GitHub"
                 className="hover:text-white transition-colors"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)' }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
@@ -945,7 +945,7 @@ const About = () => {
                 </svg>
               </a>
               {/* Twitter / X */}
-              <a href="#" aria-label="Twitter"
+              <a href="https://x.com/Moin_Sheikh09" aria-label="Twitter"
                 className="hover:text-white transition-colors"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -1058,7 +1058,7 @@ const About = () => {
                 </p>
               </div>
             </div>
-            <button className="relative z-10 w-full bg-white text-black py-4 rounded-full
+            <button onClick={() => window.open('mailto:[EMAIL_ADDRESS]', '_blank')} className="relative z-10 w-full bg-white text-black py-4 rounded-full cursor-pointer
               font-medium tracking-wide hover:scale-[1.02] transition-all">
               CONNECT NOW ↗
             </button>
