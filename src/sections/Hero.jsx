@@ -42,6 +42,10 @@ export default function Hero() {
                 {/* ── HERO CONTENT ── */}
                 <div className="flex-1 flex flex-col items-center justify-center" style={{ marginTop: '-2rem' }}>
 
+                    <h1 className="sr-only">
+                        Moin Sheikh — AI Developer &amp; Full-Stack Engineer
+                    </h1>
+
                     <h1
                         className="moin-anim text-white select-none leading-none"
                         style={{
