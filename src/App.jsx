@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import Home from './pages/Home';
 import About from './pages/About';
 import Work from './pages/Work';
@@ -29,6 +30,7 @@ function App() {
             <Route path="/labs" element={<PageTransition><Labs /></PageTransition>} />
           </Routes>
         </FloodTransitionProvider>
+        <Analytics />
       </BrowserRouter>
     </SmoothScroll>
   );

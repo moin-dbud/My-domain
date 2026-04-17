@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useFloodNavigate } from '../components/PageTransition';
 import PageHero from '../components/PageHero';
@@ -7,11 +7,11 @@ import { supabase } from '../lib/supabase';
 
 /* ─── Tag colour map ─────────────────────────────────────────── */
 const TAG_COLORS = {
-    AI: { bg: 'rgba(74,222,128,0.08)', color: '#4ade80', border: 'rgba(74,222,128,0.2)' },
-    Engineering: { bg: 'rgba(96,165,250,0.08)', color: '#60a5fa', border: 'rgba(96,165,250,0.2)' },
-    Design: { bg: 'rgba(249,115,22,0.08)', color: '#f97316', border: 'rgba(249,115,22,0.2)' },
-    Career: { bg: 'rgba(167,139,250,0.08)', color: '#a78bfa', border: 'rgba(167,139,250,0.2)' },
-    Startup: { bg: 'rgba(250,204,21,0.08)', color: '#facc15', border: 'rgba(250,204,21,0.2)' },
+    AI:          { bg: 'rgba(74,222,128,0.08)',  color: '#4ade80', border: 'rgba(74,222,128,0.2)'  },
+    Engineering: { bg: 'rgba(96,165,250,0.08)',  color: '#60a5fa', border: 'rgba(96,165,250,0.2)'  },
+    Design:      { bg: 'rgba(249,115,22,0.08)',  color: '#f97316', border: 'rgba(249,115,22,0.2)'  },
+    Career:      { bg: 'rgba(167,139,250,0.08)', color: '#a78bfa', border: 'rgba(167,139,250,0.2)' },
+    Startup:     { bg: 'rgba(250,204,21,0.08)',  color: '#facc15', border: 'rgba(250,204,21,0.2)'  },
 };
 const defaultTag = { bg: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)', border: 'rgba(255,255,255,0.08)' };
 
@@ -19,7 +19,7 @@ const defaultTag = { bg: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)
 function BlogCard({ blog, index }) {
     const { floodNavigate } = useFloodNavigate();
     const tag = TAG_COLORS[blog.tag] ?? defaultTag;
-    
+
     return (
         <motion.article
             initial={{ opacity: 0, y: 24 }}
@@ -76,11 +76,8 @@ function BlogCard({ blog, index }) {
 
             {/* Meta row */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                <span style={{
-                    fontSize: 12, color: 'rgba(255,255,255,0.3)',
-                    letterSpacing: '0.03em', fontWeight: 400,
-                }}>
-                    {blog.date} &nbsp;·&nbsp; {blog.reading_time}
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.03em', fontWeight: 400 }}>
+                    {blog.date}&nbsp;·&nbsp;{blog.reading_time}
                 </span>
                 <span style={{
                     fontSize: 11, fontWeight: 500,
@@ -140,10 +137,108 @@ function BlogCard({ blog, index }) {
     );
 }
 
+/* ─── Pagination Bar ─────────────────────────────────────────── */
+function Pagination({ current, total, onChange }) {
+    if (total <= 1) return null;
+
+    /* Build page list with ellipsis */
+    const pages = [];
+    for (let i = 1; i <= total; i++) {
+        if (i === 1 || i === total || (i >= current - 1 && i <= current + 1)) {
+            pages.push(i);
+        } else if (
+            (i === current - 2 && current > 3) ||
+            (i === current + 2 && current < total - 2)
+        ) {
+            pages.push('…');
+        }
+    }
+
+    const base = {
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        minWidth: 38, height: 38, borderRadius: 10,
+        border: '1px solid rgba(255,255,255,0.08)',
+        background: 'rgba(255,255,255,0.03)',
+        color: 'rgba(255,255,255,0.45)',
+        fontSize: 13, fontWeight: 500,
+        cursor: 'pointer',
+        fontFamily: "'Inter', sans-serif",
+        transition: 'background 0.18s, border-color 0.18s, color 0.18s',
+        padding: '0 14px',
+        userSelect: 'none',
+        letterSpacing: '-0.01em',
+    };
+    const active = { ...base, background: 'rgba(255,255,255,0.9)', borderColor: 'transparent', color: '#000', fontWeight: 700, cursor: 'default' };
+    const disabled = { ...base, opacity: 0.22, cursor: 'not-allowed', pointerEvents: 'none' };
+
+    const hover = (e) => {
+        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.16)';
+        e.currentTarget.style.color = 'rgba(255,255,255,0.88)';
+    };
+    const unhover = (e) => {
+        e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+        e.currentTarget.style.color = 'rgba(255,255,255,0.45)';
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 64, flexWrap: 'wrap' }}
+        >
+            {/* Prev */}
+            <button
+                id="blogs-prev-btn"
+                style={current === 1 ? disabled : base}
+                onClick={() => onChange(current - 1)}
+                onMouseEnter={hover} onMouseLeave={unhover}
+                aria-label="Previous page"
+            >
+                ← Prev
+            </button>
+
+            {/* Page numbers */}
+            {pages.map((p, i) =>
+                p === '…'
+                    ? <span key={`ellipsis-${i}`} style={{ ...base, cursor: 'default', pointerEvents: 'none', border: 'none', background: 'none', color: 'rgba(255,255,255,0.18)' }}>…</span>
+                    : <button
+                        key={p}
+                        id={`blogs-page-${p}`}
+                        style={p === current ? active : base}
+                        onClick={() => p !== current && onChange(p)}
+                        onMouseEnter={p !== current ? hover : undefined}
+                        onMouseLeave={p !== current ? unhover : undefined}
+                        aria-current={p === current ? 'page' : undefined}
+                    >
+                        {p}
+                    </button>
+            )}
+
+            {/* Next */}
+            <button
+                id="blogs-next-btn"
+                style={current === total ? disabled : base}
+                onClick={() => onChange(current + 1)}
+                onMouseEnter={hover} onMouseLeave={unhover}
+                aria-label="Next page"
+            >
+                Next →
+            </button>
+        </motion.div>
+    );
+}
+
 /* ─── Blogs Page ─────────────────────────────────────────────── */
+const PER_PAGE = 6;
+
 export default function Blogs() {
-    const [blogs, setBlogs] = useState([]);
+    const [blogs, setBlogs]   = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage]     = useState(1);
+    const sectionRef          = useRef(null);
 
     useEffect(() => {
         document.title = 'Blogs | Moin Sheikh';
@@ -155,31 +250,50 @@ export default function Blogs() {
             .then(({ data }) => {
                 if (data) setBlogs(data);
                 setLoading(false);
+                setPage(1);
             });
     }, []);
+
+    const totalPages = Math.ceil(blogs.length / PER_PAGE);
+    const visible    = blogs.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     return (
         <main style={{ background: '#000', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
             <PageHero
                 title="BLOGS"
                 subtitle="Thoughts on building"
-                highlight="AI systems & products."
+                highlight="AI systems &amp; products."
             />
 
-            <section style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px 120px' }}>
+            <section ref={sectionRef} style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px 120px' }}>
 
-                <motion.p
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    style={{
-                        fontSize: 11, fontWeight: 500, letterSpacing: '0.26em',
-                        textTransform: 'uppercase', color: 'rgba(255,255,255,0.24)',
-                        margin: '0 0 36px 0',
-                    }}
-                >
-                    {loading ? '—' : blogs.length} articles
-                </motion.p>
+                {/* Count row */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, margin: '0 0 36px 0' }}>
+                    <motion.p
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.26em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.24)', margin: 0 }}
+                    >
+                        {loading ? '—' : blogs.length} articles
+                    </motion.p>
+
+                    {!loading && totalPages > 1 && (
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.4 }}
+                            style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.15)', margin: 0 }}
+                        >
+                            Page {page} of {totalPages}
+                        </motion.p>
+                    )}
+                </div>
 
                 <style>{`
                     @media (max-width: 1024px) { .blogs-grid { grid-template-columns: repeat(2, 1fr) !important; } }
@@ -188,12 +302,22 @@ export default function Blogs() {
                     .blog-skeleton { height:260px; border-radius:18px; background:linear-gradient(90deg,#111 25%,#1a1a1a 50%,#111 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
                 `}</style>
 
+                {/* Grid */}
                 <div className="blogs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
                     {loading
                         ? [1,2,3,4,5,6].map(i => <div key={i} className="blog-skeleton" />)
-                        : blogs.map((blog, i) => <BlogCard key={blog.slug || blog.id} blog={blog} index={i} />)
+                        : visible.map((blog, i) => <BlogCard key={blog.slug || blog.id} blog={blog} index={i} />)
                     }
                 </div>
+
+                {/* Pagination */}
+                {!loading && (
+                    <Pagination
+                        current={page}
+                        total={totalPages}
+                        onChange={handlePageChange}
+                    />
+                )}
             </section>
 
             <Footer />
