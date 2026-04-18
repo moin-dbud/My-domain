@@ -525,7 +525,11 @@ export default function Navbar() {
                         </button>
 
                         {/* Book a Call */}
-                        <button className="text-white text-sm font-medium rounded-full bg-[#121212] px-5 py-1.5" style={{ flexShrink: 0 }}>
+                        <button
+                            className="text-white text-sm font-medium rounded-full bg-[#121212] px-5 py-1.5"
+                            style={{ flexShrink: 0 }}
+                            onClick={(e) => floodNavigate('/book-a-call', e)}
+                        >
                             Book a Call
                         </button>
                     </div>
@@ -550,6 +554,7 @@ function MobileNav() {
         { label: 'Labs', route: '/labs', icon: '⬡' },
         { label: 'Links', route: '/links', icon: '⬢' },
         { label: 'Guestbook', route: '/guestbook', icon: '✎' },
+        { label: 'Book a Call', route: '/book-a-call', icon: '📅' },
     ];
 
     // Close on route change

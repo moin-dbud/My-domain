@@ -9,6 +9,7 @@ import BlogDetail from './pages/BlogDetail';
 import Links from './pages/Links';
 import Guestbook from './pages/Guestbook';
 import Labs from './pages/Labs';
+import BookACall from './pages/BookACall';
 import SmoothScroll from './components/SmoothScroll';
 import Navbar from './components/Navbar';
 import { FloodTransitionProvider, PageTransition } from './components/PageTransition';
@@ -29,6 +30,7 @@ function App() {
             <Route path="/links" element={<PageTransition><Links /></PageTransition>} />
             <Route path="/guestbook" element={<PageTransition><Guestbook /></PageTransition>} />
             <Route path="/labs" element={<PageTransition><Labs /></PageTransition>} />
+            <Route path="/book-a-call" element={<PageTransition><BookACall /></PageTransition>} />
           </Routes>
         </FloodTransitionProvider>
         <Analytics />

@@ -433,7 +433,7 @@ export default function Footer() {
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                     <FooterLink href="#">Privacy Policy</FooterLink>
                                     <FooterLink href="#">Terms &amp; Conditions</FooterLink>
-                                    <a href="//www.dmca.com/Protection/Status.aspx?ID=814192f2-30f2-45cf-9a63-944ef3e75f7a" target='_blank' title="DMCA.com Protection Status" class="dmca-badge"> <img src ="https://images.dmca.com/Badges/dmca-badge-w100-5x1-02.png?ID=814192f2-30f2-45cf-9a63-944ef3e75f7a"  alt="DMCA.com Protection Status" /></a>  <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"> </script>
+                                    <a href="//www.dmca.com/Protection/Status.aspx?ID=814192f2-30f2-45cf-9a63-944ef3e75f7a" target='_blank' title="DMCA.com Protection Status" class="dmca-badge"> <img src ="https://www.dmca.com/Protection/Status.aspx?ID=814192f2-30f2-45cf-9a63-944ef3e75f7a&refurl=https://www.moinsheikh.in/"  alt="DMCA.com Protection Status" /></a>  <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"> </script>
                                 </div>
                             </motion.div>
 
