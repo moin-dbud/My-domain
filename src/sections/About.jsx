@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, cloneElement } from "react";
 import {
   motion,
   useScroll,
@@ -6,6 +6,7 @@ import {
   useSpring,
   useMotionValue
 } from "framer-motion";
+import { GitHubCalendar } from 'react-github-calendar';
 
 /* ═══════════════════════════════════════════════════════════
    WORLD LANDMASS BOUNDING BOXES  [latMin, latMax, lngMin, lngMax]
@@ -498,16 +499,17 @@ function PhoneMockupsGroup() {
       zIndex: 5
     }}>
       {/* On mobile: only center phone. On desktop: all three */}
-      {!isMobile && <PhoneLanding rotate={sLeftRot} x={-148} y={sLeftY} zIndex={1} delay={0.10} />}
-      <PhoneDashboard rotate={sCenterRot} x={isMobile ? 0 : 0} y={sCenterY} zIndex={3} delay={0.20} />
-      {!isMobile && <PhonePortfolio rotate={sRightRot} x={152} y={sRightY} zIndex={2} delay={0.30} />}
+      {!isMobile && <PhonePortfolio rotate={sLeftRot} x={-148} y={sLeftY} zIndex={1} delay={0.10} scale={1} />}
+      <PhoneLanding rotate={sCenterRot} x={0} y={sCenterY} zIndex={3} delay={0.20} scale={1.28} />
+      {!isMobile && <PhoneDashboard rotate={sRightRot} x={152} y={sRightY} zIndex={2} delay={0.30} scale={1} />}
     </div>
   );
+  // 
 }
 /* ─────────────────────────────────────────────────────────
    SHARED PHONE SHELL
 ───────────────────────────────────────────────────────── */
-function PhoneShell({ rotate, x, y, zIndex, delay, scale = 1, time, children }) {
+function PhoneShell({ rotate, x, y, zIndex, delay, scale = 1, time, children, href = "https://buildo-rouge.vercel.app/" }) {
   /* Base phone is 155 × 310 — side phones use scale=1, center uses scale=1.28 */
   const W = Math.round(155 * scale);
   const H = Math.round(310 * scale);
@@ -518,7 +520,8 @@ function PhoneShell({ rotate, x, y, zIndex, delay, scale = 1, time, children }) 
       initial={{ opacity: 0, y: 32 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.7, ease: "easeOut" }}
-      whileHover={{ y: -10, transition: { duration: 0.28 } }}
+      whileHover={{ y: -10, scale: scale * 1.02, transition: { duration: 0.28 } }}
+      onClick={() => window.open(href, '_blank', 'noopener,noreferrer')}
       style={{
         position: "absolute",
         rotate, x, y, zIndex,
@@ -530,6 +533,7 @@ function PhoneShell({ rotate, x, y, zIndex, delay, scale = 1, time, children }) 
           : "0 24px 60px rgba(0,0,0,0.92), 0 6px 20px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.04)",
         overflow: "hidden",
         fontFamily: "'Inter',sans-serif",
+        cursor: "pointer",
       }}
     >
       {/* Dynamic island */}
@@ -589,218 +593,338 @@ function PhoneShell({ rotate, x, y, zIndex, delay, scale = 1, time, children }) 
 }
 
 /* ─────────────────────────────────────────────────────────
-   PHONE 1 – MadeIt Landing Page
+   PHONE 1 – Buildo Landing Page (Center main view)
 ───────────────────────────────────────────────────────── */
-function PhoneLanding({ rotate, x, y, zIndex, delay }) {
+function PhoneLanding({ rotate, x, y, zIndex, delay, scale = 1 }) {
   return (
-    <PhoneShell rotate={rotate} x={x} y={y} zIndex={zIndex} delay={delay} time="9:41">
-      {/* Mini navbar */}
-      <div style={{ display: "flex", gap: 4, marginBottom: 7, flexWrap: "wrap" }}>
-        {["Works", "Port.", "Docs", "About"].map((n, i) => (
-          <span key={i} style={{
-            fontSize: 6, color: "rgba(255,255,255,0.3)",
-            background: "rgba(255,255,255,0.05)", borderRadius: 3, padding: "1px 4px"
-          }}>{n}</span>
-        ))}
+    <PhoneShell rotate={rotate} x={x} y={y} zIndex={zIndex} delay={delay} scale={scale} time="9:41">
+      {/* Navbar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 7 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <div style={{
+            width: 13, height: 13, borderRadius: 3.5,
+            background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 7, color: 'white', fontWeight: 900,
+          }}>B</div>
+          <span style={{ fontSize: 8.5, fontWeight: 800, color: 'white', letterSpacing: '-0.02em' }}>Buildo</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ fontSize: 5.5, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Docs</span>
+          <span style={{ fontSize: 5.5, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Pricing</span>
+          <div style={{
+            background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
+            borderRadius: 999, padding: '2.5px 7px',
+            fontSize: 5.5, fontWeight: 700, color: 'white',
+            boxShadow: '0 0 10px rgba(168,85,247,0.4)',
+          }}>Get started ✨</div>
+        </div>
       </div>
 
-      {/* Logo */}
-      <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 8 }}>
-        <div style={{
-          width: 20, height: 20, borderRadius: 5,
-          background: "linear-gradient(135deg,#e84c1e,#ff7a3d)",
-          display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11
-        }}>↑</div>
-        <span style={{ fontSize: 9, fontWeight: 800, color: "white", letterSpacing: "-0.02em" }}>MadeIt</span>
-      </div>
-
-      {/* Tagline pill */}
+      {/* Presence Engine pill */}
       <div style={{
-        display: "inline-flex", alignItems: "center", gap: 5,
-        padding: "3px 8px", borderRadius: 999, marginBottom: 7,
-        background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)"
+        display: 'inline-flex', alignItems: 'center', gap: 3,
+        background: 'rgba(124,58,237,0.14)', border: '1px solid rgba(124,58,237,0.35)',
+        borderRadius: 999, padding: '2px 6px', marginBottom: 5,
       }}>
-        <span style={{ fontSize: 7 }}>🚀</span>
-        <span style={{ fontSize: 7, color: "rgba(255,255,255,0.65)" }}>
-          Productivity • Progress • Proof
+        <div style={{
+          background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
+          borderRadius: 3, padding: '1px 4px',
+          fontSize: 4.8, fontWeight: 800, color: 'white', letterSpacing: '0.06em', textTransform: 'uppercase',
+        }}>PRESENCE ENGINE</div>
+        <span style={{ fontSize: 5.5, color: 'rgba(255,255,255,0.65)' }}>Build websites for businesses &amp; brands</span>
+        <span style={{ fontSize: 5.5, color: 'rgba(255,255,255,0.35)' }}>→</span>
+      </div>
+
+      {/* Hero headline */}
+      <div style={{ fontSize: 10.5, fontWeight: 900, color: 'white', lineHeight: 1.18, marginBottom: 4, letterSpacing: '-0.02em' }}>
+        Build beautiful websites for{' '}
+        <span style={{ background: 'linear-gradient(90deg,#7c3aed,#a855f7,#818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          your business &amp; brand
         </span>
       </div>
 
-      {/* Headline */}
-      <div style={{
-        fontSize: 12, fontWeight: 900, color: "white", lineHeight: 1.2, marginBottom: 5,
-        letterSpacing: "-0.02em"
-      }}>
-        Finish real<br />projects.<br />
-        <span style={{ fontSize: 11 }}>Build proof of work.</span>
-      </div>
-
       {/* Subtext */}
-      <div style={{ fontSize: 6.5, color: "rgba(255,255,255,0.4)", lineHeight: 1.55, marginBottom: 9 }}>
-        MadeIt helps students complete real projects using milestone‑based execution.
+      <div style={{ fontSize: 5.8, color: 'rgba(255,255,255,0.42)', lineHeight: 1.45, marginBottom: 7 }}>
+        Turn your idea into a production-ready website for your cafe, portfolio, local shop, or personal brand — powered by Buildo AI.
       </div>
 
-      {/* CTAs */}
-      <div style={{ display: "flex", gap: 5 }}>
-        <div style={{
-          flex: 1, height: 20, borderRadius: 999, background: "#e84c1e",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 7, fontWeight: 700, color: "white"
-        }}>
-          Start Building
-        </div>
-        <div style={{
-          flex: 1, height: 20, borderRadius: 999,
-          background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 7, color: "rgba(255,255,255,0.7)"
-        }}>
-          See How It Works
-        </div>
-      </div>
-    </PhoneShell>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────
-   PHONE 2 – Dashboard  (center, slightly larger)
-───────────────────────────────────────────────────────── */
-function PhoneDashboard({ rotate, x, y, zIndex, delay }) {
-  return (
-    <PhoneShell rotate={rotate} x={x} y={y} zIndex={zIndex} delay={delay} scale={1.28} time="9:41">
-      {/* Greeting */}
-      <div style={{ marginBottom: 6 }}>
-        <div style={{ fontSize: 13, fontWeight: 800, color: "white", letterSpacing: "-0.02em" }}>Hi, Moin</div>
-        <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
-          <span style={{
-            fontSize: 7, fontWeight: 600, color: "#e84c1e",
-            background: "rgba(232,76,30,0.12)", border: "1px solid rgba(232,76,30,0.35)",
-            borderRadius: 999, padding: "1px 7px"
-          }}>Web Development</span>
-          <span style={{ fontSize: 7, color: "rgba(255,255,255,0.42)" }}>Project in progress</span>
-        </div>
-      </div>
-
-      {/* Current project card */}
+      {/* Prompt input box (tall, structured container) */}
       <div style={{
-        background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)",
-        borderRadius: 10, padding: "8px 9px", marginBottom: 6
+        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: 9, padding: '7px 8px', marginBottom: 6,
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
       }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
-          <div>
-            <div style={{ fontSize: 6.5, color: "rgba(255,255,255,0.38)", marginBottom: 2 }}>Current Project</div>
-            <div style={{ fontSize: 9, fontWeight: 800, color: "white", lineHeight: 1.2 }}>
-              Personal Portfolio<br />Website
-            </div>
-            <div style={{ fontSize: 6, color: "rgba(255,255,255,0.38)", marginTop: 2 }}>
-              Next: Review requirements
-            </div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 16, fontWeight: 800, color: "#e84c1e", lineHeight: 1 }}>17%</div>
-            <div style={{ fontSize: 6.5, color: "rgba(255,255,255,0.4)" }}>Complete</div>
-          </div>
+        <div style={{ fontSize: 6.5, color: 'rgba(255,255,255,0.7)', fontStyle: 'italic', marginBottom: 12 }}>
+          e.g. Let's build a cafe website<span style={{ color: '#a855f7', fontWeight: 700 }}>|</span>
         </div>
-        {/* Progress bar */}
-        <div style={{ height: 4, borderRadius: 999, background: "rgba(255,255,255,0.1)", marginBottom: 6, overflow: "hidden" }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 5,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <span style={{ fontSize: 5, color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.06)', borderRadius: 3, padding: '1px 3px' }}>Prisma + Postgres</span>
+            <span style={{ fontSize: 5, color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.06)', borderRadius: 3, padding: '1px 3px' }}>Better Auth</span>
+          </div>
           <div style={{
-            width: "17%", height: "100%", borderRadius: 999,
-            background: "linear-gradient(90deg,#e84c1e,#ff7a3d)"
-          }} />
-        </div>
-        {/* Continue btn */}
-        <div style={{
-          height: 22, borderRadius: 7,
-          background: "linear-gradient(90deg,#e84c1e,#ff7a3d)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 8, fontWeight: 700, color: "white", gap: 4
-        }}>
-          Continue Project →
+            background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
+            borderRadius: 5, padding: '3px 7px',
+            fontSize: 5.5, fontWeight: 700, color: 'white',
+            boxShadow: '0 2px 8px rgba(124,58,237,0.4)',
+          }}>Synthesize Website ✨</div>
         </div>
       </div>
 
-      {/* Stats row */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, marginBottom: 6 }}>
-        {[["✓", "Projects", "0"], ["✓", "Tasks", "6"], ["📅", "Active Days", "2"]].map(([ic, label, val], i) => (
-          <div key={i} style={{ background: "rgba(255,255,255,0.05)", borderRadius: 7, padding: "5px 5px" }}>
-            <div style={{ fontSize: 6, color: "rgba(255,255,255,0.38)", marginBottom: 2 }}>{ic} {label}</div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: "white" }}>{val}</div>
-          </div>
+      {/* Category pills */}
+      <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', marginBottom: 8 }}>
+        {['🍴 Cafe', '💼 Portfolio', '🏪 Shop', '👤 Brand'].map((c, i) => (
+          <span key={i} style={{
+            fontSize: 5.5, padding: '2px 5px', borderRadius: 999,
+            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)',
+            color: 'rgba(255,255,255,0.55)',
+          }}>{c}</span>
         ))}
       </div>
 
-      {/* Portfolio banner */}
+      {/* Live Community Showcase section */}
       <div style={{
-        background: "rgba(255,255,255,0.05)", borderRadius: 7,
-        padding: "6px 8px", display: "flex", justifyContent: "space-between", alignItems: "center"
+        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 8, padding: '6px 7px', marginBottom: 6,
       }}>
-        <div>
-          <div style={{ fontSize: 7, fontWeight: 700, color: "white", marginBottom: 1 }}>
-            Your portfolio updates as you build.
-          </div>
-          <div style={{ fontSize: 6, color: "rgba(255,255,255,0.38)" }}>Share your proof of work.</div>
-        </div>
         <div style={{
-          fontSize: 7, fontWeight: 600, color: "white",
-          border: "1px solid rgba(255,255,255,0.2)", borderRadius: 5,
-          padding: "3px 6px", whiteSpace: "nowrap"
-        }}>View ↗</div>
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5,
+        }}>
+          <div style={{ fontSize: 5.2, fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            Live Community Sites ✦
+          </div>
+          <div style={{ fontSize: 5, color: '#a855f7', fontWeight: 600 }}>Explore all ↗</div>
+        </div>
+
+        {/* 2 mini site cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+          {/* Card 1 */}
+          <div style={{
+            background: 'linear-gradient(145deg,rgba(45,18,0,0.8),rgba(15,8,0,0.9))',
+            border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '5px',
+          }}>
+            <div style={{ fontSize: 6, fontWeight: 700, color: 'white', lineHeight: 1.1 }}>Artisan Roasters</div>
+            <div style={{ fontSize: 4.8, color: 'rgba(255,255,255,0.38)', marginTop: 1 }}>buildo.ai/@artisan</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
+              <span style={{ fontSize: 4.5, background: 'rgba(232,120,30,0.2)', color: '#ff7a3d', borderRadius: 3, padding: '1px 3px' }}>Cafe</span>
+              <span style={{ fontSize: 4.5, color: 'rgba(255,255,255,0.35)' }}>⚡ 1.2k</span>
+            </div>
+          </div>
+          {/* Card 2 */}
+          <div style={{
+            background: 'linear-gradient(145deg,rgba(20,10,40,0.8),rgba(10,5,25,0.9))',
+            border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '5px',
+          }}>
+            <div style={{ fontSize: 6, fontWeight: 700, color: 'white', lineHeight: 1.1 }}>Karan Studio</div>
+            <div style={{ fontSize: 4.8, color: 'rgba(255,255,255,0.38)', marginTop: 1 }}>buildo.ai/@karan</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
+              <span style={{ fontSize: 4.5, background: 'rgba(124,58,237,0.2)', color: '#a855f7', borderRadius: 3, padding: '1px 3px' }}>Portfolio</span>
+              <span style={{ fontSize: 4.5, color: 'rgba(255,255,255,0.35)' }}>⚡ 850</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Feature / trust bar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '3px 4px', background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.2)',
+        borderRadius: 6,
+      }}>
+        <span style={{ fontSize: 5, color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: 2 }}>
+          <span style={{ color: '#a855f7' }}>⚡</span> Prompt to Live Site in &lt; 2 min
+        </span>
+        <span style={{ fontSize: 4.8, color: '#a855f7', fontWeight: 600 }}>Basic / Pro Plans</span>
       </div>
     </PhoneShell>
   );
 }
 
 /* ─────────────────────────────────────────────────────────
-   PHONE 3 – Portfolio Profile
+   PHONE 2 – Buildo Builder / AI Synthesis  (Right view)
 ───────────────────────────────────────────────────────── */
-function PhonePortfolio({ rotate, x, y, zIndex, delay }) {
+function PhoneDashboard({ rotate, x, y, zIndex, delay, scale = 1 }) {
   return (
-    <PhoneShell rotate={rotate} x={x} y={y} zIndex={zIndex} delay={delay} time="9:41">
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 7 }}>
+    <PhoneShell rotate={rotate} x={x} y={y} zIndex={zIndex} delay={delay} scale={scale} time="9:41">
+      {/* Top bar: project label + status */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <div style={{ fontSize: 7, fontWeight: 700, color: 'white', letterSpacing: '-0.01em' }}>
+          Artisan Coffee Shop Website
+        </div>
         <div style={{
-          width: 24, height: 24, borderRadius: "50%",
-          background: "linear-gradient(135deg,#e84c1e,#ff7a3d)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 10, flexShrink: 0
-        }}>M</div>
-        <div>
-          <div style={{ fontSize: 9, fontWeight: 800, color: "white", lineHeight: 1.1 }}>Moin Sheikh</div>
-          <div style={{ fontSize: 6.5, color: "rgba(255,255,255,0.4)" }}>AI Developer &amp; Web Innovator</div>
+          fontSize: 6, color: '#a855f7',
+          background: 'rgba(168,85,247,0.14)', border: '1px solid rgba(168,85,247,0.35)',
+          borderRadius: 999, padding: '1px 6px', fontWeight: 600,
+        }}>Processing</div>
+      </div>
+
+      {/* Split-pane: left chat, right preview */}
+      <div style={{ display: 'flex', gap: 5, marginBottom: 7 }}>
+        {/* Left — revision assistant */}
+        <div style={{
+          flex: '0 0 48%', background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '6px 7px',
+        }}>
+          <div style={{ fontSize: 6, fontWeight: 600, color: 'rgba(168,85,247,0.85)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 5 }}>
+            Revision Assistant
+          </div>
+          <div style={{ background: 'rgba(124,58,237,0.18)', borderRadius: 5, padding: '4px 5px', marginBottom: 4 }}>
+            <div style={{ fontSize: 5.5, color: 'rgba(255,255,255,0.75)', lineHeight: 1.45 }}>
+              Add photos of the roasting process, a sustainability story, and customer testimonials in a carousel.
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <div style={{
+              width: 12, height: 12, borderRadius: '50%',
+              background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 7, flexShrink: 0, color: 'white', fontWeight: 800,
+            }}>B</div>
+            <div style={{ fontSize: 5.5, color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>
+              I am now generating your website...
+            </div>
+          </div>
+          <div style={{
+            marginTop: 5, display: 'flex', alignItems: 'center', gap: 3,
+            background: 'rgba(255,255,255,0.04)', borderRadius: 4, padding: '3px 5px',
+          }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(168,85,247,0.6)' }} />
+            <div style={{ fontSize: 5, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.04em' }}>
+              Synthesizing code changes...
+            </div>
+          </div>
+        </div>
+
+        {/* Right — live preview loading */}
+        <div style={{
+          flex: 1, background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          padding: '8px 5px', minHeight: 90,
+        }}>
+          <div style={{
+            width: 26, height: 26, borderRadius: '50%',
+            border: '2.5px solid rgba(124,58,237,0.2)',
+            borderTopColor: '#a855f7',
+            marginBottom: 6,
+          }} />
+          <div style={{ fontSize: 5.5, color: 'rgba(255,255,255,0.55)', textAlign: 'center', fontWeight: 600, lineHeight: 1.4 }}>
+            Analyzing requirements &amp; design system...
+          </div>
+          <div style={{ fontSize: 5, color: 'rgba(255,255,255,0.25)', marginTop: 2 }}>
+            Estimated time: 2–3 min
+          </div>
+          <div style={{ display: 'flex', gap: 3, marginTop: 6 }}>
+            {[1, 0.5, 0.25].map((o, i) => (
+              <div key={i} style={{ width: 5, height: 3, borderRadius: 999, background: `rgba(168,85,247,${o})` }} />
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Bio */}
-      <div style={{ fontSize: 6.5, color: "rgba(255,255,255,0.4)", lineHeight: 1.55, marginBottom: 7 }}>
-        Passionate AI &amp; Data Science student building intelligent systems and modern web applications.
+      {/* Bottom toolbar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        background: 'rgba(255,255,255,0.04)', borderRadius: 7, padding: '5px 8px',
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {['📱', '[□]', '💻'].map((ic, i) => (
+            <span key={i} style={{ fontSize: 9, opacity: i === 1 ? 1 : 0.35 }}>{ic}</span>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 4 }}>
+          {['Save', 'Preview', 'Publish'].map((lbl, i) => (
+            <div key={i} style={{
+              fontSize: 5.5, fontWeight: 700, padding: '2px 5px', borderRadius: 4,
+              background: i === 2 ? 'linear-gradient(135deg,#7c3aed,#a855f7)' : 'rgba(255,255,255,0.07)',
+              border: i === 2 ? 'none' : '1px solid rgba(255,255,255,0.1)',
+              color: i === 2 ? 'white' : 'rgba(255,255,255,0.6)',
+            }}>{lbl}</div>
+          ))}
+        </div>
+      </div>
+    </PhoneShell>
+  );
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   PHONE 3 – Buildo Published Site Preview
+───────────────────────────────────────────────────────── */
+function PhonePortfolio({ rotate, x, y, zIndex, delay, scale = 1 }) {
+  return (
+    <PhoneShell rotate={rotate} x={x} y={y} zIndex={zIndex} delay={delay} scale={scale} time="9:41">
+      {/* Address bar */}
+      <div style={{
+        background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: 5, padding: '3px 7px', marginBottom: 7,
+        display: 'flex', alignItems: 'center', gap: 4,
+      }}>
+        <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#39d353', flexShrink: 0 }} />
+        <div style={{ fontSize: 6, color: 'rgba(255,255,255,0.45)', flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+          buildo.ai/@moin/artisan-coffee
+        </div>
+        <div style={{ fontSize: 6, color: 'rgba(255,255,255,0.25)' }}>↗</div>
       </div>
 
-      {/* Action buttons */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, marginBottom: 8 }}>
-        {["GitHub", "LinkedIn", "Download PDF", "Share"].map((btn, i) => (
-          <div key={i} style={{
-            height: 18, borderRadius: 5, fontSize: 6.5, fontWeight: 600,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            background: i < 2 ? "rgba(255,255,255,0.08)" : i === 2 ? "rgba(232,76,30,0.2)" : "rgba(255,255,255,0.05)",
-            border: i === 2 ? "1px solid rgba(232,76,30,0.4)" : "1px solid rgba(255,255,255,0.1)",
-            color: i === 2 ? "#ff7a3d" : "rgba(255,255,255,0.7)",
-          }}>{btn}</div>
-        ))}
+      {/* Generated cafe site hero */}
+      <div style={{
+        background: 'linear-gradient(160deg,#1a0a00,#2d1200)',
+        borderRadius: 8, padding: '10px 9px', marginBottom: 6, position: 'relative', overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', top: -12, right: -12,
+          width: 48, height: 48, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(232,120,30,0.25) 0%, transparent 70%)',
+        }} />
+        <div style={{ fontSize: 6, color: 'rgba(255,180,80,0.7)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 3 }}>
+          Est. 2019
+        </div>
+        <div style={{ fontSize: 11, fontWeight: 900, color: 'white', lineHeight: 1.15, marginBottom: 3, letterSpacing: '-0.02em' }}>
+          The Artisan<br />Coffee Co.
+        </div>
+        <div style={{ fontSize: 6, color: 'rgba(255,255,255,0.45)', marginBottom: 7, lineHeight: 1.4 }}>
+          Specialty brews &amp; handcrafted pastries in the heart of the city.
+        </div>
+        <div style={{ display: 'flex', gap: 4 }}>
+          <div style={{
+            flex: 1, height: 17, borderRadius: 999,
+            background: 'linear-gradient(90deg,#c94c0a,#ff7a3d)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 6, fontWeight: 700, color: 'white',
+          }}>Visit Us</div>
+          <div style={{
+            flex: 1, height: 17, borderRadius: 999,
+            background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 6, color: 'rgba(255,255,255,0.65)',
+          }}>Our Menu</div>
+        </div>
       </div>
 
-      {/* Skills section */}
-      <div style={{ fontSize: 7, fontWeight: 700, color: "white", marginBottom: 5 }}>
-        Skills Proven Through Work
-      </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
-        {["HTML5", "CSS3", "JavaScript", "Responsive", "Git", "Deploy"].map((skill, i) => (
-          <span key={i} style={{
-            fontSize: 6, padding: "2px 6px", borderRadius: 999,
-            background: "rgba(232,76,30,0.12)",
-            border: "1px solid rgba(232,76,30,0.3)",
-            color: "rgba(255,180,140,0.9)",
-          }}>{skill}</span>
-        ))}
+      {/* Buildo attribution badge */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.25)',
+        borderRadius: 7, padding: '4px 8px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{
+            width: 10, height: 10, borderRadius: 2,
+            background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 6, color: 'white', fontWeight: 900,
+          }}>B</div>
+          <div style={{ fontSize: 6, color: 'rgba(255,255,255,0.55)' }}>Built with <span style={{ color: '#a855f7', fontWeight: 700 }}>Buildo AI</span></div>
+        </div>
+        <div style={{
+          fontSize: 5.5, color: '#a855f7', fontWeight: 600,
+          border: '1px solid rgba(168,85,247,0.35)', borderRadius: 4, padding: '1px 5px',
+        }}>Edit site ↗</div>
       </div>
     </PhoneShell>
   );
@@ -817,44 +941,249 @@ const TAB_CONTENT = {
 };
 
 /* ═══════════════════════════════════════════════════════════
-   TIMEZONE CHIP
+   GITHUB BENTO CARD
 ═══════════════════════════════════════════════════════════ */
-const TZ_CHIPS = [
-  { code: "GB", name: "UK", active: false },
-  { code: "IN", name: "India", active: true },
-  { code: "US", name: "USA", active: false },
-];
+const GH_USERNAME = 'moin-dbud';
 
-function TzChip({ code, name, isActive, onClick }) {
+function GitHubBentoCard({ cardBase, vignette }) {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [calTooltip, setCalTooltip] = useState({ visible: false, x: 0, y: 0, count: 0, date: '' });
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchStats() {
+      try {
+        // Fetch user info + contribution calendar in parallel.
+        // The contributions API is the same source react-github-calendar uses,
+        // so it reflects the exact numbers shown on the GitHub profile page.
+        const [userRes, calRes] = await Promise.all([
+          fetch(`https://api.github.com/users/${GH_USERNAME}`),
+          fetch(`https://github-contributions-api.jogruber.de/v4/${GH_USERNAME}?y=last`),
+        ]);
+        if (!userRes.ok) throw new Error('user API error');
+        const user = await userRes.json();
+
+        let last30 = 0;
+        let totalYear = 0;
+        if (calRes.ok) {
+          const calData = await calRes.json();
+          const contributions = calData.contributions ?? [];
+          const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
+          contributions.forEach(day => {
+            totalYear += day.count ?? 0;
+            if (new Date(day.date).getTime() >= cutoff) {
+              last30 += day.count ?? 0;
+            }
+          });
+        }
+
+        if (!cancelled) {
+          setStats({ repos: user.public_repos, followers: user.followers, last30, totalYear });
+          setLoading(false);
+        }
+      } catch (_) {
+        if (!cancelled) {
+          // Graceful static fallback if APIs are unreachable
+          setStats({ repos: 12, followers: 24, last30: 0, totalYear: 0 });
+          setLoading(false);
+        }
+      }
+    }
+    fetchStats();
+    return () => { cancelled = true; };
+  }, []);
+
+  const STAT_ITEMS = stats ? [
+    { label: 'Repositories', sublabel: 'Public on GitHub', value: stats.repos, suffix: '' },
+    { label: 'Contributions', sublabel: 'In the last year', value: stats.totalYear, suffix: '' },
+    { label: 'Contributions', sublabel: 'In the last 30 days', value: stats.last30, suffix: '' },
+  ] : [null, null, null];
+
   return (
-    <button
-      onClick={onClick}
-      style={{
-        display: "flex", alignItems: "center", gap: 12,
-        padding: "9px 22px", borderRadius: 999,
-        width: 160,
-        background: isActive ? "rgba(135,82,8,0.48)" : "rgba(255,255,255,0.06)",
-        border: isActive
-          ? "1px solid rgba(196,130,28,0.6)"
-          : "1px solid rgba(255,255,255,0.1)",
-        cursor: "pointer", transition: "all 0.25s ease",
-      }}
-    >
-      <span style={{
-        fontSize: 11.5, fontWeight: 700, letterSpacing: "0.04em",
-        color: isActive ? "rgba(245,185,55,0.95)" : "rgba(255,255,255,0.38)"
-      }}>
-        {code}
-      </span>
-      <span style={{
-        fontSize: 15, fontWeight: isActive ? 600 : 400,
-        color: isActive ? "white" : "rgba(255,255,255,0.65)"
-      }}>
-        {name}
-      </span>
-    </button>
+    <div className={`${cardBase} relative overflow-hidden`} style={{ minHeight: 380 }}>
+      <div className={vignette} />
+
+      {/* Subtle green ambient glow */}
+      <div aria-hidden="true" style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: 'radial-gradient(ellipse 70% 50% at 50% 110%, rgba(39,211,83,0.06) 0%, transparent 70%)',
+      }} />
+
+      {/* Card content */}
+      <div style={{ position: 'relative', zIndex: 10, padding: '28px 28px 22px' }}>
+
+        {/* Header row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: '50%',
+              border: '1px solid rgba(255,255,255,0.1)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'rgba(255,255,255,0.04)',
+            }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+              </svg>
+            </div>
+            <p style={{ fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.38)', fontWeight: 500, margin: 0 }}>
+              GitHub Activity
+            </p>
+          </div>
+          {/* Live pulse */}
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{
+              width: 7, height: 7, borderRadius: '50%',
+              background: '#39d353', boxShadow: '0 0 6px #39d353',
+              display: 'inline-block',
+              animation: 'ghBentoPulse 2s ease-in-out infinite',
+            }} />
+            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+              Live
+            </span>
+          </span>
+        </div>
+
+        {/* Heading */}
+        <h3 style={{ fontSize: 22, fontWeight: 800, color: 'white', lineHeight: 1.15, margin: '0 0 4px 0', letterSpacing: '-0.02em' }}>
+          Code{' '}
+          <span style={{ fontFamily: "'Playfair Display',serif", fontStyle: 'italic', fontWeight: 400, color: 'rgba(255,255,255,0.42)' }}>
+            fingerprint.
+          </span>
+        </h3>
+
+        {/* Stats row — 3 large numbers */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, margin: '20px 0 20px' }}>
+          {STAT_ITEMS.map((item, i) => (
+            <div key={i} style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.07)',
+              borderRadius: 16, padding: '14px 12px',
+            }}>
+              {loading || !item ? (
+                <>
+                  <div style={{ height: 32, width: '60%', borderRadius: 8, background: 'rgba(255,255,255,0.07)', marginBottom: 6, animation: 'ghSkeletonPulse 1.4s ease-in-out infinite' }} />
+                  <div style={{ height: 9, width: '75%', borderRadius: 6, background: 'rgba(255,255,255,0.04)', marginBottom: 4, animation: 'ghSkeletonPulse 1.4s ease-in-out infinite 0.2s' }} />
+                  <div style={{ height: 9, width: '55%', borderRadius: 6, background: 'rgba(255,255,255,0.03)', animation: 'ghSkeletonPulse 1.4s ease-in-out infinite 0.35s' }} />
+                </>
+              ) : (
+                <>
+                  <div style={{ fontSize: 28, fontWeight: 900, color: 'white', lineHeight: 1, letterSpacing: '-0.03em' }}>
+                    {item.value}{item.suffix}
+                  </div>
+                  {/* Primary label — what the number measures */}
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', marginTop: 6, letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 600 }}>
+                    {item.label}
+                  </div>
+                  {/* Sub-label — the time scope / clarifier */}
+                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.28)', marginTop: 2, letterSpacing: '0.04em', fontWeight: 400 }}>
+                    {item.sublabel}
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Contribution heatmap */}
+        <div style={{ overflowX: 'auto', overflowY: 'visible', paddingBottom: 4, scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.07) transparent' }}>
+          <GitHubCalendar
+            username={GH_USERNAME}
+            year="last"
+            colorScheme="dark"
+            theme={{ dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'] }}
+            blockSize={11}
+            blockMargin={3}
+            blockRadius={2}
+            fontSize={11}
+            showWeekdayLabels
+            style={{ minWidth: 520, color: 'rgba(255,255,255,0.3)', fontSize: 11 }}
+            renderBlock={(block, activity) => {
+              const dateLabel = new Date(activity.date).toLocaleDateString('en-US', {
+                weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+              });
+              return cloneElement(block, {
+                style: {
+                  ...block.props.style,
+                  cursor: 'pointer',
+                  transition: 'transform 0.13s ease, filter 0.13s ease',
+                  transformOrigin: 'center',
+                  transformBox: 'fill-box',
+                },
+                onMouseEnter(e) {
+                  e.currentTarget.style.transform = 'scale(1.6)';
+                  e.currentTarget.style.filter = 'brightness(1.5)';
+                  setCalTooltip({ visible: true, x: e.clientX, y: e.clientY, count: activity.count, date: dateLabel });
+                },
+                onMouseMove(e) {
+                  setCalTooltip(t => ({ ...t, x: e.clientX, y: e.clientY }));
+                },
+                onMouseLeave(e) {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.filter = 'brightness(1)';
+                  setCalTooltip(t => ({ ...t, visible: false }));
+                },
+              });
+            }}
+          />
+        </div>
+
+        {/* GitHub profile link */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginTop: 14 }}>
+          <a
+            href={`https://github.com/${GH_USERNAME}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              fontSize: 11, color: 'rgba(255,255,255,0.35)',
+              textDecoration: 'none', letterSpacing: '0.08em',
+              textTransform: 'uppercase', fontWeight: 500,
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 999, padding: '5px 14px',
+              background: 'rgba(255,255,255,0.03)',
+              transition: 'color 0.2s, border-color 0.2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+          >
+            @{GH_USERNAME} ↗
+          </a>
+        </div>
+      </div>
+
+      {/* Floating tooltip */}
+      {calTooltip.visible && (
+        <div aria-hidden="true" style={{
+          position: 'fixed', left: calTooltip.x, top: calTooltip.y - 12,
+          transform: 'translate(-50%, -100%)',
+          background: '#1c2128', border: '1px solid rgba(255,255,255,0.12)',
+          borderRadius: 8, padding: '7px 12px',
+          pointerEvents: 'none', zIndex: 9999,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.7)',
+          whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif",
+        }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#e6edf3', marginBottom: 2 }}>
+            {calTooltip.count === 0 ? 'No contributions' : `${calTooltip.count} contribution${calTooltip.count !== 1 ? 's' : ''}`}
+          </div>
+          <div style={{ fontSize: 11, color: 'rgba(230,237,243,0.5)' }}>{calTooltip.date}</div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes ghBentoPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.35; transform: scale(1.45); }
+        }
+        @keyframes ghSkeletonPulse {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 0.25; }
+        }
+      `}</style>
+    </div>
   );
 }
+
 /* ═══════════════════════════════════════════════════════════
    MAIN ABOUT
 ═══════════════════════════════════════════════════════════ */
@@ -864,7 +1193,6 @@ const About = () => {
   const [spot, setSpot] = useState({ x: 0, y: 0 });
   const [copied, setCopied] = useState(false);
   const [time, setTime] = useState(new Date());
-  const [activeCountry, setActiveCountry] = useState("IN");
   const email = "hello@moinsheikh.in";
 
   useEffect(() => {
@@ -1075,92 +1403,10 @@ const About = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-9 relative"
           style={{ zIndex: 5, marginTop: 24 }}>
 
-          {/* ── BOTTOM LEFT: Available Globally ── */}
-          <div className={`${cardBase} relative overflow-hidden`}
-            style={{ minHeight: 380 }}>
-            <div className={vignette} />
+          {/* ── BOTTOM LEFT: GitHub Activity ── */}
+          <GitHubBentoCard cardBase={cardBase} vignette={vignette} />
 
-            {/* Globe fills entire card — smaller on mobile */}
-            <div className="hidden sm:block" style={{
-              position: "absolute",
-              bottom: -80, left: -80,
-              zIndex: 3,
-            }}>
-              <DraggableGlobe size={480} activeCountry={activeCountry} />
-            </div>
-            <div className="sm:hidden" style={{
-              position: "absolute",
-              bottom: -40, left: -40,
-              zIndex: 3,
-            }}>
-              <DraggableGlobe size={300} activeCountry={activeCountry} />
-            </div>
-
-            {/* Text — top-left */}
-            <div className="absolute top-7 left-7 z-10">
-              <p className="text-[10px] tracking-[0.18em] text-gray-500 uppercase font-medium mb-3">
-                Available Globally
-              </p>
-              <h3 className="text-[22px] font-bold leading-snug text-white">
-                Adaptable across<br />time zones
-              </h3>
-            </div>
-
-            {/* Chips — right side, below text on mobile */}
-            <div className="hidden sm:flex" style={{
-              position: "absolute", right: 7, top: 180, zIndex: 10,
-              flexDirection: 'column', gap: 3,
-            }}>
-              {TZ_CHIPS.map(({ code, name }) => (
-                <TzChip
-                  key={code}
-                  code={code}
-                  name={name}
-                  isActive={activeCountry === code}
-                  onClick={() => setActiveCountry(code)}
-                />
-              ))}
-            </div>
-
-            {/* Mobile TZ chips — simple row below text */}
-            <div className="flex sm:hidden" style={{
-              position: "absolute", top: 90, left: 16, right: 16,
-              zIndex: 10, gap: 6, flexWrap: 'wrap',
-            }}>
-              {TZ_CHIPS.map(({ code, name }) => (
-                <button
-                  key={code}
-                  onClick={() => setActiveCountry(code)}
-                  style={{
-                    padding: '6px 12px', borderRadius: 999, fontSize: 12,
-                    background: activeCountry === code ? 'rgba(135,82,8,0.48)' : 'rgba(255,255,255,0.06)',
-                    border: activeCountry === code ? '1px solid rgba(196,130,28,0.6)' : '1px solid rgba(255,255,255,0.1)',
-                    color: activeCountry === code ? 'rgba(245,185,55,0.95)' : 'rgba(255,255,255,0.5)',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {code} {name}
-                </button>
-              ))}
-            </div>
-
-            {/* Remote label — bottom-right */}
-            <div className="absolute bottom-6 right-7 z-10 text-right">
-              <div className="flex items-center justify-end gap-2">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                  stroke="rgba(255,255,255,0.35)" strokeWidth="2" strokeLinecap="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <p className="text-[10px] text-gray-500 tracking-[0.18em] uppercase">Remote</p>
-              </div>
-              <p className="text-white font-bold text-[18px] leading-tight">
-                {TZ_CHIPS.find(c => c.code === activeCountry)?.name}
-              </p>
-            </div>
-          </div>
-
-          {/* ── BOTTOM RIGHT: Founder of MadeIt ── */}
+          {/* ── BOTTOM RIGHT: Founder of Buildo ── */}
           <div className={`${cardBase} relative overflow-hidden`}
             style={{
               minHeight: 380,
@@ -1169,33 +1415,34 @@ const About = () => {
             }}>
             <div className={vignette} />
 
-            {/* Subtle orange ambient under phones */}
+            {/* Subtle purple ambient under phones */}
             <div style={{
               position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
               width: "90%", height: 200,
-              background: "radial-gradient(ellipse at center bottom, rgba(232,76,30,0.12) 0%, transparent 70%)",
+              background: "radial-gradient(ellipse at center bottom, rgba(124,58,237,0.15) 0%, transparent 70%)",
               pointerEvents: "none", zIndex: 1
             }} />
 
-            {/* Title pinned top-right (mirrors Rune card in reference) */}
+            {/* Title pinned top-right */}
             <div style={{ position: "absolute", top: 28, right: 28, zIndex: 10, textAlign: "right" }}>
               <div style={{ lineHeight: 1.1, marginBottom: 5 }}>
                 <span style={{
                   fontSize: 24, fontWeight: 800, color: "white",
                   fontFamily: "'Inter',sans-serif"
                 }}>Founder of </span>
-                <span style={{
+                <a href="https://buildo-rouge.vercel.app/" target="_blank" rel="noopener noreferrer" style={{
                   fontSize: 24, fontWeight: 800,
                   fontFamily: "'Playfair Display',serif", fontStyle: "italic",
-                  background: "linear-gradient(115deg,#e84c1e 0%,#ff7a3d 42%,#ff5fa0 100%)",
+                  background: "linear-gradient(115deg,#7c3aed 0%,#a855f7 45%,#818cf8 100%)",
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                }}>MadeIt</span>
+                  cursor: "pointer",
+                }}>Buildo</a>
               </div>
               <p style={{
                 fontSize: 12, color: "rgba(255,255,255,0.32)",
                 fontFamily: "'Playfair Display',serif", fontStyle: "italic"
               }}>
-                {"< Turning real projects into proof-of-work portfolios />"}
+                {"< Describe it. Build it. Publish it. />"}
               </p>
             </div>
 

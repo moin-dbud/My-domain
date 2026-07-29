@@ -9,36 +9,48 @@ const FALLBACK_PROJECTS = [
         description: 'MadeIt is a milestone-driven learning platform designed to help students finish real projects instead of passively consuming tutorials.',
         features: ['Milestone-based project execution system','Progress tracking dashboard with analytics','Automated proof-of-work portfolio generation'],
         tech: [{ label: 'React', icon: '⚛' },{ label: 'Next.js', icon: '▲' },{ label: 'Node.js', icon: '🟢' }],
+        labels: [],
         desktop: { bg: '#0f0a04', accent: '#f97316' },
         mobile: { bg: '#130c03', accent: '#f97316', label: 'My Projects' },
         images: { desktop: '/desktop-madeit.webp', mobile: '/mobile-madeit.webp' },
+        live_url: '', github_url: '',
+        contributors: [],
     },
     {
         id: 1, title: 'Nexora Learn AI', category: 'AI Education Platform', color: '#a855f7',
         description: 'Nexora Learn AI is an intelligent study planning platform designed for college students preparing for exams.',
         features: ['AI-powered personalized study planning','Rule-based scheduling algorithm','Smart task prioritization'],
         tech: [{ label: 'Python', icon: '🐍' },{ label: 'FastAPI', icon: '⚡' },{ label: 'OpenAI API', icon: '🤖' }],
+        labels: [],
         desktop: { bg: '#0d0814', accent: '#a855f7' },
         mobile: { bg: '#120a1a', accent: '#a855f7', label: 'Study Plan' },
         images: { desktop: '/desktop-nexora.webp', mobile: '/mobile-nexora.webp' },
+        live_url: '', github_url: '',
+        contributors: [],
     },
     {
         id: 2, title: 'LevelUp.dev', category: 'EdTech Platform', color: '#38bdf8',
         description: 'LevelUp.dev is a full-stack online learning platform where students can browse, enroll in, and complete structured development courses.',
         features: ['Course discovery and enrollment system','Structured learning modules','Student progress tracking'],
         tech: [{ label: 'React', icon: '⚛' },{ label: 'Node.js', icon: '🟢' },{ label: 'MongoDB', icon: '🍃' }],
+        labels: [],
         desktop: { bg: '#03111a', accent: '#38bdf8' },
         mobile: { bg: '#051520', accent: '#38bdf8', label: 'My Courses' },
         images: { desktop: '/desktop-levelup.webp', mobile: '/mobile-levelup.webp' },
+        live_url: '', github_url: '',
+        contributors: [],
     },
     {
         id: 3, title: 'AI Resume Analyzer', category: 'AI Tool', color: '#e2e8f0',
         description: 'An AI-powered tool that analyzes resumes and provides actionable insights to improve job readiness.',
         features: ['Resume analysis against job descriptions','Keyword optimization suggestions','Structure and formatting feedback'],
         tech: [{ label: 'React', icon: '⚛' },{ label: 'OpenAI API', icon: '🤖' },{ label: 'Node.js', icon: '🟢' }],
+        labels: [],
         desktop: { bg: '#0a0a0a', accent: '#94a3b8' },
         mobile: { bg: '#111', accent: '#94a3b8', label: 'Analyze Resume' },
         images: { desktop: '/desktop-resume.webp', mobile: '/mobile-resume.webp' },
+        live_url: '', github_url: '',
+        contributors: [],
     },
 ];
 
@@ -52,9 +64,13 @@ function mapRow(row) {
         description: row.description || '',
         features: Array.isArray(row.features) ? row.features : [],
         tech: Array.isArray(row.tech) ? row.tech : [],
+        labels: Array.isArray(row.labels) ? row.labels : [],
         desktop: { bg: row.desktop_bg || '#0a0a0a', accent: row.desktop_accent || row.color || '#a855f7' },
         mobile: { bg: row.mobile_bg || '#0a0a0a', accent: row.mobile_accent || row.color || '#a855f7', label: row.mobile_label || '' },
         images: { desktop: row.image_desktop || '', mobile: row.image_mobile || '' },
+        live_url: row.live_url || '',
+        github_url: row.github_url || '',
+        contributors: Array.isArray(row.contributors) ? row.contributors : [],
     };
 }
 
@@ -62,13 +78,26 @@ function mapRow(row) {
 function useProjects() {
     const [PROJECTS, setProjects] = useState(FALLBACK_PROJECTS);
     useEffect(() => {
+        // Try to fetch with contributors join; fall back to simple fetch if table doesn't exist
         supabase
             .from('projects')
-            .select('*')
+            .select('*, contributors(*)')
             .eq('is_visible', true)
             .order('sort_order')
-            .then(({ data }) => {
-                if (data && data.length > 0) setProjects(data.map(mapRow));
+            .then(({ data, error }) => {
+                if (error) {
+                    // contributors table may not exist yet — fetch without join
+                    supabase
+                        .from('projects')
+                        .select('*')
+                        .eq('is_visible', true)
+                        .order('sort_order')
+                        .then(({ data: d2 }) => {
+                            if (d2 && d2.length > 0) setProjects(d2.map(mapRow));
+                        });
+                } else if (data && data.length > 0) {
+                    setProjects(data.map(mapRow));
+                }
             });
     }, []);
     return PROJECTS;
@@ -99,17 +128,189 @@ const injectStyles = `
     border-color: rgba(255,255,255,0.22);
   }
 
+  /* Action buttons */
+  .proj-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    outline: none;
+    white-space: nowrap;
+  }
+  .proj-btn-live {
+    background: white;
+    color: #000;
+  }
+  .proj-btn-live:hover {
+    background: rgba(255,255,255,0.88);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255,255,255,0.15);
+  }
+  .proj-btn-github {
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.85);
+    border: 1px solid rgba(255,255,255,0.14);
+  }
+  .proj-btn-github:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.28);
+    transform: translateY(-1px);
+  }
+
+  /* Contributor avatar */
+  .contrib-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.6);
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
+    background: #1a1a1a;
+  }
+  .contrib-avatar:hover {
+    transform: scale(1.15) translateY(-3px);
+    border-color: rgba(255,255,255,0.4);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    z-index: 10;
+  }
+  .contrib-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.6);
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+  }
+  .contrib-avatar-fallback:hover {
+    transform: scale(1.15) translateY(-3px);
+    border-color: rgba(255,255,255,0.4);
+  }
+
+  /* Contributor popup */
+  .contrib-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .contrib-popup-card {
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 380px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+  }
+  .contrib-popup-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .contrib-popup-close:hover {
+    background: rgba(255,255,255,0.12);
+    color: white;
+  }
+  .contrib-social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+  }
+  .contrib-social-link:hover {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.22);
+    color: white;
+    transform: translateY(-1px);
+  }
+
   /* Mobile project cards */
   .mobile-project-card {
     background: #0a0a0a;
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 20px;
-    padding: 28px 24px;
+    overflow: hidden;
     transition: border-color 0.3s, background 0.3s;
   }
   .mobile-project-card:hover {
     border-color: rgba(255,255,255,0.15);
     background: #111;
+  }
+
+  /* Mobile expand button */
+  .mobile-expand-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 11px;
+    background: rgba(255,255,255,0.04);
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.45);
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .mobile-expand-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.75);
+  }
+  .mobile-expand-btn svg {
+    transition: transform 0.3s ease;
+  }
+  .mobile-expand-btn.expanded svg {
+    transform: rotate(180deg);
   }
 
   @media (max-width: 639px) {
@@ -123,8 +324,6 @@ const injectStyles = `
 `;
 
 /* ─── Desktop Mockup ────────────────────────────────────────────────────── */
-/* Real image: aspect-ratio 1536:1100 ≈ 1.4:1 (landscape)                  */
-/* Fallback: generated browser-chrome UI                                     */
 function DesktopMockup({ project }) {
     const { bg, accent } = project.desktop;
     const imgSrc = project.images?.desktop;
@@ -163,7 +362,6 @@ function DesktopMockup({ project }) {
 
             {/* Content */}
             {imgSrc ? (
-                /* ── Real screenshot fills frame at native 1536:1100 ratio ── */
                 <div style={{ aspectRatio: '1536 / 1100', width: '100%', overflow: 'hidden' }}>
                     <img
                         src={imgSrc}
@@ -173,7 +371,6 @@ function DesktopMockup({ project }) {
                     />
                 </div>
             ) : (
-                /* ── Generated UI fallback ── */
                 <div style={{ padding: '18px 18px 14px', minHeight: 200 }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
                         <span style={{ fontSize: 13, fontWeight: 800, color: 'white', letterSpacing: '-0.02em' }}>
@@ -219,8 +416,6 @@ function DesktopMockup({ project }) {
 }
 
 /* ─── Mobile Mockup ─────────────────────────────────────────────────────── */
-/* Real image: aspect-ratio 420:908 ≈ 0.46:1 (portrait)                    */
-/* W=148 → H = 148 × (908/420) ≈ 320px                                     */
 function MobileMockup({ project }) {
     const { bg, accent } = project.mobile;
     const imgSrc = project.images?.mobile;
@@ -239,9 +434,7 @@ function MobileMockup({ project }) {
             display: 'flex', flexDirection: 'column',
         }}>
             {imgSrc ? (
-                /* ── Real screenshot fills phone shell ── */
                 <>
-                    {/* Status bar gradient overlay */}
                     <div style={{
                         position: 'absolute', top: 0, left: 0, right: 0, height: 28,
                         background: 'linear-gradient(to bottom,rgba(0,0,0,0.5),transparent)',
@@ -260,7 +453,6 @@ function MobileMockup({ project }) {
                     />
                 </>
             ) : (
-                /* ── Generated UI fallback ── */
                 <>
                     <div style={{ padding: '10px 12px 6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>9:41</span>
@@ -311,6 +503,260 @@ function TechPill({ icon, label }) {
             <span style={{ fontSize: 11 }}>{icon}</span>
             {label}
         </span>
+    );
+}
+
+/* ─── Label Pill ─────────────────────────────────────────────────────────── */
+function LabelPill({ label, color }) {
+    return (
+        <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '3px 10px',
+            borderRadius: 999,
+            background: `${color}18`,
+            border: `1px solid ${color}35`,
+            color: color,
+            fontSize: 10,
+            fontWeight: 600,
+            fontFamily: "'Inter',sans-serif",
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+        }}>
+            {label}
+        </span>
+    );
+}
+
+/* ─── Action Buttons ────────────────────────────────────────────────────── */
+function ActionButtons({ project }) {
+    return (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {project.live_url && (
+                <a
+                    href={project.live_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="proj-btn proj-btn-live"
+                    aria-label={`Preview ${project.title} live`}
+                >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                    Preview Live
+                </a>
+            )}
+            {project.github_url && (
+                <a
+                    href={project.github_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="proj-btn proj-btn-github"
+                    aria-label={`View ${project.title} on GitHub`}
+                >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+                    </svg>
+                    GitHub
+                </a>
+            )}
+        </div>
+    );
+}
+
+/* ─── Contributor Popup ─────────────────────────────────────────────────── */
+const SOCIAL_ICONS = {
+    github: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+        </svg>
+    ),
+    linkedin: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+        </svg>
+    ),
+    portfolio: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
+    ),
+    twitter: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+    ),
+    instagram: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+        </svg>
+    ),
+};
+
+function ContributorPopup({ contributor, color, onClose }) {
+    const socials = contributor.social_links || {};
+    const socialEntries = Object.entries(socials).filter(([, url]) => url);
+
+    useEffect(() => {
+        const handler = (e) => e.key === 'Escape' && onClose();
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+    }, [onClose]);
+
+    return (
+        <AnimatePresence>
+            <motion.div
+                className="contrib-popup-overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={onClose}
+            >
+                <motion.div
+                    className="contrib-popup-card"
+                    initial={{ opacity: 0, scale: 0.88, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.88, y: 20 }}
+                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ borderTop: `3px solid ${color}` }}
+                >
+                    <button className="contrib-popup-close" onClick={onClose} aria-label="Close">✕</button>
+
+                    {/* Profile */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginBottom: 24 }}>
+                        {contributor.image_url ? (
+                            <img
+                                src={contributor.image_url}
+                                alt={contributor.name}
+                                style={{
+                                    width: 80, height: 80, borderRadius: '50%',
+                                    objectFit: 'cover',
+                                    border: `3px solid ${color}`,
+                                    boxShadow: `0 0 0 4px ${color}28, 0 12px 40px rgba(0,0,0,0.6)`,
+                                }}
+                            />
+                        ) : (
+                            <div style={{
+                                width: 80, height: 80, borderRadius: '50%',
+                                background: `linear-gradient(135deg, ${color}, ${color}88)`,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 28, fontWeight: 700, color: 'white',
+                                border: `3px solid ${color}`,
+                                boxShadow: `0 0 0 4px ${color}28, 0 12px 40px rgba(0,0,0,0.6)`,
+                            }}>
+                                {contributor.name?.charAt(0)?.toUpperCase() || '?'}
+                            </div>
+                        )}
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: 20, fontWeight: 800, color: 'white', letterSpacing: '-0.02em', marginBottom: 4 }}>
+                                {contributor.name}
+                            </div>
+                            {contributor.role && (
+                                <div style={{
+                                    display: 'inline-block',
+                                    fontSize: 11, fontWeight: 600,
+                                    padding: '3px 10px', borderRadius: 999,
+                                    background: `${color}18`, color: color,
+                                    border: `1px solid ${color}30`,
+                                    letterSpacing: '0.06em', textTransform: 'uppercase',
+                                }}>
+                                    {contributor.role}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Bio */}
+                    {contributor.bio && (
+                        <p style={{
+                            fontSize: 13, color: 'rgba(255,255,255,0.52)',
+                            lineHeight: 1.72, textAlign: 'center',
+                            marginBottom: 24, padding: '0 4px',
+                        }}>
+                            {contributor.bio}
+                        </p>
+                    )}
+
+                    {/* Social links */}
+                    {socialEntries.length > 0 && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+                            {socialEntries.map(([platform, url]) => (
+                                <a
+                                    key={platform}
+                                    href={url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="contrib-social-link"
+                                >
+                                    {SOCIAL_ICONS[platform] || '🔗'}
+                                    {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                                </a>
+                            ))}
+                        </div>
+                    )}
+                </motion.div>
+            </motion.div>
+        </AnimatePresence>
+    );
+}
+
+/* ─── Contributors Row ──────────────────────────────────────────────────── */
+function ContributorsRow({ contributors, color }) {
+    const [activeContributor, setActiveContributor] = useState(null);
+
+    if (!contributors || contributors.length === 0) return null;
+
+    return (
+        <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {contributors.map((c, i) => (
+                        <div
+                            key={c.id || i}
+                            style={{ marginLeft: i > 0 ? -10 : 0, zIndex: contributors.length - i, position: 'relative' }}
+                            title={c.name}
+                            onClick={() => setActiveContributor(c)}
+                        >
+                            {c.image_url ? (
+                                <img
+                                    src={c.image_url}
+                                    alt={c.name}
+                                    className="contrib-avatar"
+                                    style={{ boxShadow: `0 0 0 2px ${color}60` }}
+                                />
+                            ) : (
+                                <div
+                                    className="contrib-avatar-fallback"
+                                    style={{ background: `linear-gradient(135deg, ${color}, ${color}88)`, boxShadow: `0 0 0 2px ${color}60` }}
+                                >
+                                    {c.name?.charAt(0)?.toUpperCase() || '?'}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', fontFamily: "'Inter',sans-serif", fontWeight: 500 }}>
+                    {contributors.length === 1
+                        ? '1 contributor'
+                        : `${contributors.length} contributors`}
+                </span>
+            </div>
+
+            {activeContributor && (
+                <ContributorPopup
+                    contributor={activeContributor}
+                    color={color}
+                    onClose={() => setActiveContributor(null)}
+                />
+            )}
+        </>
     );
 }
 
@@ -400,6 +846,139 @@ function Timeline({ activeIndex, total, scrollProgress, projects }) {
     );
 }
 
+/* ─── Mobile Card ───────────────────────────────────────────────────────── */
+function MobileProjectCard({ project, index, total }) {
+    const [expanded, setExpanded] = useState(false);
+
+    return (
+        <motion.div
+            className="mobile-project-card"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+        >
+            {/* Color accent top bar */}
+            <div style={{ height: 3, background: project.color, width: '100%' }} />
+
+            <div style={{ padding: '24px 20px 0' }}>
+                {/* Category + number */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 500 }}>
+                        {project.category}
+                    </span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', letterSpacing: '0.12em' }}>
+                        {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+                    </span>
+                </div>
+
+                {/* Color line + title */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                    <div style={{ width: 18, height: 2.5, background: project.color, borderRadius: 2, flexShrink: 0 }} />
+                    <h3 style={{ fontSize: 22, fontWeight: 800, color: 'white', letterSpacing: '-0.02em', margin: 0 }}>
+                        {project.title}
+                    </h3>
+                </div>
+
+                {/* Desktop image */}
+                {project.images?.desktop && (
+                    <div style={{ marginBottom: 14, borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
+                        <img
+                            src={project.images.desktop}
+                            alt={`${project.title} preview`}
+                            style={{ width: '100%', display: 'block', aspectRatio: '16/9', objectFit: 'cover' }}
+                        />
+                    </div>
+                )}
+
+                {/* Description */}
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.42)', lineHeight: 1.75, marginBottom: 16 }}>
+                    {project.description}
+                </p>
+
+                {/* Labels */}
+                {project.labels && project.labels.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
+                        {project.labels.map((lbl, li) => (
+                            <LabelPill key={li} label={typeof lbl === 'string' ? lbl : lbl.label} color={project.color} />
+                        ))}
+                    </div>
+                )}
+
+                {/* Action buttons */}
+                <div style={{ marginBottom: 16 }}>
+                    <ActionButtons project={project} />
+                </div>
+
+                {/* Contributors */}
+                {project.contributors && project.contributors.length > 0 && (
+                    <div style={{ marginBottom: 16 }}>
+                        <ContributorsRow contributors={project.contributors} color={project.color} />
+                    </div>
+                )}
+            </div>
+
+            {/* Expand toggle */}
+            <button
+                className={`mobile-expand-btn ${expanded ? 'expanded' : ''}`}
+                onClick={() => setExpanded(p => !p)}
+                aria-expanded={expanded}
+            >
+                {expanded ? 'Show less' : 'Show details'}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </button>
+
+            {/* Expanded details */}
+            <AnimatePresence>
+                {expanded && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        style={{ overflow: 'hidden' }}
+                    >
+                        <div style={{ padding: '20px 20px 24px' }}>
+                            {/* Features */}
+                            {project.features && project.features.length > 0 && (
+                                <div style={{ marginBottom: 18 }}>
+                                    <div style={{ fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.28)', fontWeight: 600, marginBottom: 10 }}>
+                                        Features
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                        {project.features.map((feat, fi) => (
+                                            <div key={fi} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                                                <SparkIcon color={project.color} />
+                                                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.55 }}>{feat}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Tech stack */}
+                            {project.tech && project.tech.length > 0 && (
+                                <div>
+                                    <div style={{ fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.28)', fontWeight: 600, marginBottom: 10 }}>
+                                        Tech Stack
+                                    </div>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                                        {project.tech.map(({ label, icon }) => (
+                                            <TechPill key={label} icon={icon} label={label} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </motion.div>
+    );
+}
+
 /* ─── Main Section ──────────────────────────────────────────────────────── */
 export default function Projects() {
     const PROJECTS = useProjects();
@@ -414,11 +993,6 @@ export default function Projects() {
 
     useEffect(() => {
         const unsub = scrollYProgress.on('change', (v) => {
-            /* Math.round(v * (N-1)) maps:
-               v=0   → idx 0 (1st project)
-               v=0.33 → idx 1
-               v=0.67 → idx 2
-               v=1.0  → idx 3 (last project) — guaranteed */
             const idx = Math.round(v * (PROJECTS.length - 1));
             setActiveIndex(Math.min(PROJECTS.length - 1, Math.max(0, idx)));
         });
@@ -468,67 +1042,24 @@ export default function Projects() {
 
                 {/* Project cards */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                    {PROJECTS.map((project, i) => (
-                        <motion.div
-                            key={project.id}
-                            className="mobile-project-card"
-                            initial={{ opacity: 0, y: 24 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: '-40px' }}
-                            transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                        >
-                            {/* Category + number */}
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 500 }}>
-                                    {project.category}
-                                </span>
-                                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', letterSpacing: '0.12em' }}>
-                                    {String(i + 1).padStart(2, '0')} / {String(PROJECTS.length).padStart(2, '0')}
-                                </span>
-                            </div>
-
-                            {/* Color line + title */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                                <div style={{ width: 18, height: 2.5, background: project.color, borderRadius: 2, flexShrink: 0 }} />
-                                <h3 style={{ fontSize: 22, fontWeight: 800, color: 'white', letterSpacing: '-0.02em', margin: 0 }}>
-                                    {project.title}
-                                </h3>
-                            </div>
-
-                            {/* Description */}
-                            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.42)', lineHeight: 1.75, marginBottom: 18 }}>
-                                {project.description}
-                            </p>
-
-                            {/* Features */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 18 }}>
-                                {project.features.map((feat, fi) => (
-                                    <div key={fi} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                                        <SparkIcon color={project.color} />
-                                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.55 }}>{feat}</span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Tech pills */}
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                                {project.tech.map(({ label, icon }) => (
-                                    <TechPill key={label} icon={icon} label={label} />
-                                ))}
-                            </div>
-                        </motion.div>
+                    {PROJECTS.map((proj, i) => (
+                        <MobileProjectCard
+                            key={proj.id}
+                            project={proj}
+                            index={i}
+                            total={PROJECTS.length}
+                        />
                     ))}
                 </div>
             </div>
 
             {/* ───────── DESKTOP: Sticky scroll showcase ───────── */}
-            {/* Tall wrapper — each project gets 100vh of scroll travel */}
             <div
                 className="projects-sticky-section"
                 ref={wrapperRef}
                 style={{ height: `${(PROJECTS.length + 1) * 100}vh`, position: 'relative' }}
             >
-                {/* Sticky panel — pins to viewport, never scrolls */}
+                {/* Sticky panel */}
                 <section style={{
                     position: 'sticky', top: 0,
                     height: '100vh', overflow: 'hidden',
@@ -581,7 +1112,7 @@ export default function Projects() {
                             }}>SHOWCASE</span>
                         </h2>
 
-                        {/* Scroll hint — fades as soon as user starts scrolling */}
+                        {/* Scroll hint */}
                         <motion.div style={{ opacity: useTransform(scrollYProgress, [0, 0.05], [1, 0]) }}>
                             <p style={{
                                 marginTop: 14, fontSize: 11,
@@ -615,7 +1146,7 @@ export default function Projects() {
                                     transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                                 >
                                     {/* Title row */}
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                                         <motion.div
                                             layoutId="dash"
                                             style={{ width: 22, height: 2.5, background: project.color, borderRadius: 2 }}
@@ -635,16 +1166,25 @@ export default function Projects() {
                                         </span>
                                     </div>
 
+                                    {/* Labels */}
+                                    {project.labels && project.labels.length > 0 && (
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
+                                            {project.labels.map((lbl, li) => (
+                                                <LabelPill key={li} label={typeof lbl === 'string' ? lbl : lbl.label} color={project.color} />
+                                            ))}
+                                        </div>
+                                    )}
+
                                     {/* Description */}
                                     <p style={{
                                         fontSize: 13, color: 'rgba(255,255,255,0.42)',
-                                        lineHeight: 1.82, marginBottom: 24, maxWidth: 400,
+                                        lineHeight: 1.82, marginBottom: 20, maxWidth: 400,
                                     }}>
                                         {project.description}
                                     </p>
 
                                     {/* Features */}
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
                                         {project.features.map((feat, i) => (
                                             <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                                                 <SparkIcon color={project.color} />
@@ -656,11 +1196,19 @@ export default function Projects() {
                                     </div>
 
                                     {/* Tech stack pills */}
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 20 }}>
                                         {project.tech.map(({ label, icon }) => (
                                             <TechPill key={label} icon={icon} label={label} />
                                         ))}
                                     </div>
+
+                                    {/* Action buttons */}
+                                    <div style={{ marginBottom: 20 }}>
+                                        <ActionButtons project={project} />
+                                    </div>
+
+                                    {/* Contributors */}
+                                    <ContributorsRow contributors={project.contributors} color={project.color} />
                                 </motion.div>
                             </AnimatePresence>
                         </div>
@@ -722,8 +1270,6 @@ export default function Projects() {
                             </AnimatePresence>
                         </div>
                     </div>
-
-
                 </section>
             </div>
         </>
