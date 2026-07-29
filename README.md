@@ -2,7 +2,7 @@
   <img src="public/cropped_circle_image.webp" width="130" height="130" style="border-radius: 50%; border: 3px solid #6366f1; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);" alt="Moin Portfolio Logo" />
 </p>
 
-<h1 align="center">⚡ MOIN KHAN — PORTFOLIO ⚡</h1>
+<h1 align="center">⚡ MOIN SHEIKH — PORTFOLIO ⚡</h1>
 
 <p align="center">
   <b>A modern, high-performance developer portfolio & AI showcase built with React 19, Vite & Tailwind CSS v4.</b>
