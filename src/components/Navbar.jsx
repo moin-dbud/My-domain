@@ -423,12 +423,13 @@ export default function Navbar() {
             >
                 {/* Left — Logo */}
                 <div className="flex items-center gap-2">
-                    <span
+                    <a
+                        href="/"
                         className="text-white font-semibold text-base"
                         style={{ letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
                     >
                         MS
-                    </span>
+                    </a>
 
                     {/* Divider line — fades out after text has gone */}
                     <motion.div style={{

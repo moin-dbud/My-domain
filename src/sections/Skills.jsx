@@ -28,6 +28,7 @@ const SKILLS = [
     { name: 'MongoDB', color: '#47A248', sym: '🍃' },
     { name: 'MySQL', color: '#4479A1', sym: '⬟' },
     { name: 'Firebase', color: '#FFCA28', sym: '🔥' },
+    { name: 'PostgreSQL', color: '#336791', sym: '🐘' },
     // Auth & Security
     { name: 'JWT', color: '#d63aff', sym: '🔐' },
     { name: 'OAuth', color: '#EB5424', sym: '○' },

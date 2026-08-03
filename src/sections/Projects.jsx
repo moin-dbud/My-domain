@@ -5,6 +5,18 @@ import { supabase } from '../lib/supabase';
 /* ─── Static fallback data (used if Supabase is unavailable) ──────────── */
 const FALLBACK_PROJECTS = [
     {
+        id: 0, title: 'Buildo', category: 'AI SaaS Platform', color: '#a855f7',
+        description: 'An AI-powered website builder that generates production-ready marketing sites for small businesses, cafes, portfolios, and personal brands from a single text prompt — with a curated design-system engine that keeps every generated site visually distinct instead of defaulting to generic AI-template layouts.',
+        features: ['AI-generated websites from a single prompt','Curated design-system engine for visual variety (not generic AI templates)','Public profiles & shareable project URLs (@username/project-slug)','Credit-based generation with Cashfree payment integration','Custom admin panel for full platform control'],
+        tech: [{ label: 'React', icon: '⚛' },{ label: 'TypeScript', icon: '🧠' },{ label: 'Node.js', icon: '🟢' },{ label: 'PostgreSQL (Neon)', icon: '🐘' }, { label: 'Prisma', icon: '🧩' }, { label: 'Tailwind CSS', icon: '🎨'}],
+        labels: [],
+        desktop: { bg: '#0a0a0a', accent: '#a855f7' },
+        mobile: { bg: '#0a0a0a', accent: '#a855f7', label: 'Build a Website' },
+        images: { desktop: '/buildo-laptop.png', mobile: '/mobile-buildo.png' },
+        live_url: '', github_url: '',
+        contributors: [],
+    },
+    {
         id: 0, title: 'MadeIt', category: 'Product Platform', color: '#f97316',
         description: 'MadeIt is a milestone-driven learning platform designed to help students finish real projects instead of passively consuming tutorials.',
         features: ['Milestone-based project execution system','Progress tracking dashboard with analytics','Automated proof-of-work portfolio generation'],

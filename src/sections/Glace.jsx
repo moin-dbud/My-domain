@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useFloodNavigate } from '../components/PageTransition';
 
 /* ─── Images ──────────────────────────────────────────────────── */
-const IMAGES = ['/image2.webp', '/image3.webp', '/image10.webp'];
+const IMAGES = ['/image9.png', '/image4.png', '/image1.webp'];
 
 /* Card position configs: index 0 = front, 1 = back-left, 2 = back-right */
 function getPositions(xOffset) {
