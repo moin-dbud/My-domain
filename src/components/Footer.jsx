@@ -224,31 +224,35 @@ export default function Footer() {
     const inView = useInView(ref, { once: true, margin: '-80px' });
 
     const generalLinks = [
-        { label: 'Home', href: '#hero' },
-        { label: 'Projects', href: '#projects' },
-        { label: 'Guestbook', href: '#guestbook' },
-        { label: 'Uses', href: '#uses' },
+        { label: 'Home', href: '/' },
+        { label: 'Projects', href: '/work' },
+        { label: 'Guestbook', href: '/guestbook' },
+    ];
+
+    const legalLinks = [
+        { label: 'Privacy Policy', href: '/privacy' },
+        { label: 'Terms & Conditions', href: '/terms' },
     ];
 
     const aboutLinks = [
-        { label: 'About Me', href: '#about' },
-        { label: 'Skills', href: '#skills' },
-        { label: 'Projects', href: '#projects' },
-        { label: 'Contact', href: '#contact' },
+        { label: 'About Me', href: '/about' },
+        { label: 'Skills', href: '/' },
+        { label: 'Projects', href: '/work' },
+        { label: 'Contact', href: '/book-a-call' },
     ];
 
     const projectLinks = [
-        { label: 'Buildo', href: '#' },
-        { label: 'MadeIt', href: '#' },
-        { label: 'Nexora Learn AI', href: '#' },
-        { label: 'LevelUp.dev', href: '#' },
+        { label: 'Buildo', href: 'https://buildo.moinsheikh.in/' },
+        { label: 'MadeIt', href: 'https://madeit.moinsheikh.in/' },
+        { label: 'Nexora Learn AI', href: 'https://nexora-learnai.vercel.app/' },
+        { label: 'VolunteerIQ', href: 'http://volunteer-iq.vercel.app/' },
     ];
 
     const socials = [
         { icon: <GithubIcon />, href: 'https://github.com/moin-dbud', label: 'GitHub' },
-        { icon: <LinkedinIcon />, href: 'https://linkedin.com', label: 'LinkedIn' },
-        { icon: <TwitterIcon />, href: 'https://twitter.com', label: 'Twitter' },
-        { icon: <EmailIcon />, href: 'mailto:moin@example.com', label: 'Email' },
+        { icon: <LinkedinIcon />, href: 'https://www.linkedin.com/in/moin-build/', label: 'LinkedIn' },
+        { icon: <TwitterIcon />, href: 'https://x.com/Moin_Sheikh09', label: 'Twitter' },
+        { icon: <EmailIcon />, href: 'mailto:hello@moinsheikh.in', label: 'Email' },
     ];
 
     return (
@@ -431,8 +435,9 @@ export default function Footer() {
 
                                 {/* Legal links */}
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                                    <FooterLink href="#">Privacy Policy</FooterLink>
-                                    <FooterLink href="#">Terms &amp; Conditions</FooterLink>
+                                    {legalLinks.map(({ label, href }) => (
+                                        <FooterLink key={label} href={href}>{label}</FooterLink>
+                                    ))}
                                     {/* <a href="https://www.dmca.com/r/26zy1q5" target='_blank' title="DMCA.com Protection Status" class="dmca-badge"> <img src ="https://www.dmca.com/Protection/Status.aspx?ID=814192f2-30f2-45cf-9a63-944ef3e75f7a&refurl=https://www.moinsheikh.in/"  alt="DMCA.com Protection Status" /></a>  <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"> </script> */}
                                 </div>
                             </motion.div>

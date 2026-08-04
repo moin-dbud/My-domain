@@ -10,6 +10,8 @@ import Links from './pages/Links';
 import Guestbook from './pages/Guestbook';
 import Labs from './pages/Labs';
 import BookACall from './pages/BookACall';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 import SmoothScroll from './components/SmoothScroll';
 import Navbar from './components/Navbar';
 import { FloodTransitionProvider, PageTransition } from './components/PageTransition';
@@ -31,6 +33,8 @@ function App() {
             <Route path="/guestbook" element={<PageTransition><Guestbook /></PageTransition>} />
             <Route path="/labs" element={<PageTransition><Labs /></PageTransition>} />
             <Route path="/book-a-call" element={<PageTransition><BookACall /></PageTransition>} />
+            <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
+            <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
           </Routes>
         </FloodTransitionProvider>
         <Analytics />

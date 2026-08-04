@@ -180,7 +180,7 @@ function PhoneMockupsGroup() {
 /* ─────────────────────────────────────────────────────────
    SHARED PHONE SHELL
 ───────────────────────────────────────────────────────── */
-function PhoneShell({ rotate, x, y, zIndex, delay, scale = 1, time, children, href = "https://buildo-rouge.vercel.app/" }) {
+function PhoneShell({ rotate, x, y, zIndex, delay, scale = 1, time, children, href = "https://buildo.moinsheikh.in/" }) {
   /* Base phone is 155 × 310 — side phones use scale=1, center uses scale=1.28 */
   const W = Math.round(155 * scale);
   const H = Math.round(310 * scale);

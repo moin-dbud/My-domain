@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, cloneElement } from 'react';
-import { useInView } from 'framer-motion';
+import { useInView, motion } from 'framer-motion';
 import { GitHubCalendar } from 'react-github-calendar';
 
 const GITHUB_USERNAME = 'moin-dbud';
