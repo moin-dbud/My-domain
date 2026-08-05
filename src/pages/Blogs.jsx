@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { useFloodNavigate } from '../components/PageTransition';
 import PageHero from '../components/PageHero';
 import Footer from '../components/Footer';
 import { supabase } from '../lib/supabase';
+import { useSEO } from '../hooks/useSEO';
+import JsonLd from '../components/JsonLd';
 
 /* ─── Tag colour map ─────────────────────────────────────────── */
 const TAG_COLORS = {
@@ -234,14 +235,28 @@ function Pagination({ current, total, onChange }) {
 /* ─── Blogs Page ─────────────────────────────────────────────── */
 const PER_PAGE = 6;
 
+const blogsSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moinsheikh.in/' },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://moinsheikh.in/blogs' },
+    ],
+};
+
 export default function Blogs() {
     const [blogs, setBlogs]   = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage]     = useState(1);
     const sectionRef          = useRef(null);
 
+    useSEO({
+        title: 'Blog | Moin Sheikh — AI, Engineering & Product Writing',
+        description: 'Read articles by Moin Sheikh on AI development, full-stack engineering, product design, and building software that ships. Practical insights from real projects.',
+        path: '/blogs',
+    });
+
     useEffect(() => {
-        document.title = 'Blogs | Moin Sheikh';
         supabase
             .from('blogs')
             .select('*')
@@ -263,7 +278,8 @@ export default function Blogs() {
     };
 
     return (
-        <main style={{ background: '#000', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
+        <main style={{ background: '#000', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }} aria-label="Blog articles by Moin Sheikh">
+            <JsonLd schema={blogsSchema} id="json-ld-blogs" />
             <PageHero
                 title="BLOGS"
                 subtitle="Thoughts on building"

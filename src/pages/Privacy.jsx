@@ -92,7 +92,7 @@ const privacyBody = (
       <li>Lodge a complaint with a relevant supervisory authority</li>
     </ul>
     <p>
-      To exercise any of these rights, contact me at moin@example.com. I will respond within a reasonable timeframe and in accordance with applicable law.
+      To exercise any of these rights, contact me at <a href="mailto:hello@moinsheikh.in">hello@moinsheikh.in</a>. I will respond within a reasonable timeframe and in accordance with applicable law.
     </p>
 
     <h2 style={{ color: '#a855f7', marginTop: '1.75rem', marginBottom: '0.75rem', fontSize: '1.25rem' }}>8. Children&apos;s Privacy</h2>
@@ -126,8 +126,9 @@ export default function Privacy() {
       heroHighlight="policy"
       lastUpdated="August 4, 2026"
       body={privacyBody}
-      metaTitle="Privacy Policy | Moin Sheikh"
-      metaDescription="Privacy policy for Moin Sheikh's portfolio website."
+      metaTitle="Privacy Policy | Moin Sheikh — moinsheikh.in"
+      metaDescription="Read Moin Sheikh's privacy policy. Understand how your data is collected, stored, and protected when you visit moinsheikh.in — a personal portfolio by an AI developer."
+      metaPath="/privacy"
     />
   );
 }

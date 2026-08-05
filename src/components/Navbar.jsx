@@ -656,7 +656,7 @@ function MobileNav() {
                         <div style={{ height: 72, flexShrink: 0 }} />
 
                         {/* Main links */}
-                        <nav style={{ flex: 1 }}>
+                        <nav style={{ flex: 1 }} aria-label="Main navigation">
                             {NAV_LINKS.map(({ label, route, icon }, i) => (
                                 <motion.button
                                     key={label}

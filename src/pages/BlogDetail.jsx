@@ -6,6 +6,8 @@ import { marked } from 'marked';
 import { supabase } from '../lib/supabase';
 import { useFloodNavigate } from '../components/PageTransition';
 import Footer from '../components/Footer';
+import { useSEO } from '../hooks/useSEO';
+import JsonLd from '../components/JsonLd';
 
 /* ─── Configure marked ──────────────────────────────────────────── */
 marked.setOptions({ breaks: true, gfm: true });
@@ -515,13 +517,60 @@ export default function BlogDetail() {
       if (error || !data) {
         dispatch({ type: 'NOT_FOUND' });
       } else {
-        document.title = `${data.title} | Moin Sheikh`;
         dispatch({ type: 'SUCCESS', blog: data });
       }
     });
 
     return () => { cancelled = true; };
   }, [slug]);
+
+  /* Build Article schema once blog is loaded */
+  const articleSchema = useMemo(() => {
+    if (!blog) return null;
+    return [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: blog.title,
+        description: blog.description || '',
+        datePublished: blog.created_at || blog.date || '',
+        dateModified: blog.updated_at || blog.created_at || blog.date || '',
+        image: blog.cover_image || 'https://moinsheikh.in/og-image.png',
+        url: `https://moinsheikh.in/blog/${blog.slug || slug}`,
+        author: {
+          '@type': 'Person',
+          name: 'Moin Sheikh',
+          url: 'https://moinsheikh.in',
+        },
+        publisher: {
+          '@type': 'Person',
+          name: 'Moin Sheikh',
+          url: 'https://moinsheikh.in',
+        },
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': `https://moinsheikh.in/blog/${blog.slug || slug}`,
+        },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moinsheikh.in/' },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://moinsheikh.in/blogs' },
+          { '@type': 'ListItem', position: 3, name: blog.title, item: `https://moinsheikh.in/blog/${blog.slug || slug}` },
+        ],
+      },
+    ];
+  }, [blog, slug]);
+
+  /* Per-article SEO */
+  useSEO({
+    title: blog ? `${blog.title} | Moin Sheikh` : 'Blog | Moin Sheikh',
+    description: blog?.description || 'Read this article by Moin Sheikh on AI, engineering, and product development.',
+    path: `/blog/${slug}`,
+    ogType: 'article',
+  });
 
   /* Share handler */
   const handleShare = async () => {
@@ -556,8 +605,9 @@ export default function BlogDetail() {
   return (
     <>
       <style>{blogDetailStyles}</style>
+      {articleSchema && <JsonLd schema={articleSchema} id={`json-ld-blog-${slug}`} />}
 
-      <main style={{ background: '#000', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
+      <main style={{ background: '#000', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }} aria-label={blog ? `Blog article: ${blog.title}` : 'Blog article'}>
 
 
         {/* ── Content ── */}

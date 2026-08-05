@@ -74,8 +74,8 @@ export default function Hero() {
                 <div className="bottom-anim w-full flex items-end justify-between px-6 sm:px-8 pb-10 sm:pb-12 shrink-0 z-10">
 
                     {/* Left: location */}
-                    <div className="flex flex-col gap-1 justify-center items-center">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(48,205,17,1)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <div className="flex flex-col gap-1 justify-center items-center" aria-label="Location: Based in Nagpur, India" role="note">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(48,205,17,1)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                             <circle cx="12" cy="10" r="3" />
                         </svg>
@@ -84,8 +84,8 @@ export default function Hero() {
                     </div>
 
                     {/* Right: stack */}
-                    <div className="flex flex-col gap-1 justify-center items-center">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <div className="flex flex-col gap-1 justify-center items-center" aria-label="Role: AI Innovator and Web Developer" role="note">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             <polygon points="12 2 2 7 12 12 22 7 12 2" />
                             <polyline points="2 17 12 22 22 17" />
                             <polyline points="2 12 12 17 22 12" />

@@ -1,0 +1,14 @@
+# robots.txt — moinsheikh.in
+# Generated: 2026-08-05
+
+User-agent: *
+Allow: /
+
+# Block server-side API routes from crawling
+Disallow: /api/
+
+# Block query string variants (no useful content)
+Disallow: /*?*
+
+# Sitemap location
+Sitemap: https://moinsheikh.in/sitemap.xml

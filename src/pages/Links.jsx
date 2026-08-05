@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { motion } from 'framer-motion';
 import Footer from '../components/Footer';
+import { useSEO } from '../hooks/useSEO';
+import JsonLd from '../components/JsonLd';
 
 /* ─── Social platform data ───────────────────────────────────── */
 const LINKS = [
@@ -211,17 +211,29 @@ function SocialCard({ link, index }) {
 }
 
 /* ─── Links Page ─────────────────────────────────────────────── */
+const linksSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moinsheikh.in/' },
+        { '@type': 'ListItem', position: 2, name: 'Links', item: 'https://moinsheikh.in/links' },
+    ],
+};
+
 export default function Links() {
-    useEffect(() => {
-        document.title = 'Links | Moin Sheikh';
-    }, []);
+    useSEO({
+        title: 'Links | Moin Sheikh — Find Me Online',
+        description: 'Find Moin Sheikh on GitHub, LinkedIn, X (Twitter), Instagram, and more. Connect with an AI developer and full-stack engineer from Nagpur, India.',
+        path: '/links',
+    });
 
     return (
         <main style={{
             background: '#000', minHeight: '100vh',
             fontFamily: "'Inter', sans-serif",
             overflow: 'hidden',
-        }}>
+        }} aria-label="Moin Sheikh social links">
+            <JsonLd schema={linksSchema} id="json-ld-links" />
 
             {/* ────────────────────────────────────────────────────
                 HERO — Two-column: typography left, portrait right

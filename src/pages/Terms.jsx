@@ -91,8 +91,9 @@ export default function Terms() {
       heroHighlight="conditions"
       lastUpdated="August 4, 2026"
       body={termsBody}
-      metaTitle="Terms and Conditions | Moin Sheikh"
-      metaDescription="Terms and conditions for Moin Sheikh's portfolio website."
+      metaTitle="Terms and Conditions | Moin Sheikh — moinsheikh.in"
+      metaDescription="Read the terms and conditions for using Moin Sheikh's portfolio website. Covers intellectual property, acceptable use, limitations of liability, and governing law."
+      metaPath="/terms"
     />
   );
 }

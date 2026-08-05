@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageHero from '../components/PageHero';
 import Footer from '../components/Footer';
+import { useSEO } from '../hooks/useSEO';
+import JsonLd from '../components/JsonLd';
 
 /* ─── Injected Styles ───────────────────────────────────────────── */
 const pageStyles = `
@@ -704,15 +706,27 @@ function SendMessageForm({ onSuccess }) {
   );
 }
 
-/* ─── Main Page ─────────────────────────────────────────── */
+/* ─── BookACall schema ──────────────────────────────────── */
+const bookACallSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moinsheikh.in/' },
+    { '@type': 'ListItem', position: 2, name: 'Book a Call', item: 'https://moinsheikh.in/book-a-call' },
+  ],
+};
+
+/* ─── Main Page ─────────────────────────────────────────────── */
 export default function BookACall() {
   const [mode, setMode] = useState('call'); // 'call' | 'message'
   const [callDone, setCallDone] = useState(false);
   const [msgDone, setMsgDone] = useState(false);
 
-  useEffect(() => {
-    document.title = "Book a Call | Moin Sheikh";
-  }, []);
+  useSEO({
+    title: 'Book a Call | Moin Sheikh — Schedule a Meeting or Send a Message',
+    description: 'Book a call or send a message to Moin Sheikh — AI developer and full-stack engineer from Nagpur, India. Available for freelance projects, consultations, and collaborations.',
+    path: '/book-a-call',
+  });
 
   const resetCall = () => setCallDone(false);
   const resetMsg = () => setMsgDone(false);

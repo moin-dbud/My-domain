@@ -5,6 +5,8 @@ import Footer from '../components/Footer';
 import GradientArt from './labs/GradientArt';
 import PaletteGenerator from './labs/PaletteGenerator';
 import ReactionTimer from './labs/ReactionTimer';
+import { useSEO } from '../hooks/useSEO';
+import JsonLd from '../components/JsonLd';
 
 /* ─── Injected global styles ─────────────────────────────────────────── */
 const STYLES = `
@@ -316,19 +318,33 @@ function ToolCard({ tool, index, isOpen, onToggle }) {
   );
 }
 
-/* ─── Labs Page ──────────────────────────────────────────────────────── */
+/* ─── Labs Page ─────────────────────────────────────────────────── */
+const labsSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://moinsheikh.in/' },
+    { '@type': 'ListItem', position: 2, name: 'Labs', item: 'https://moinsheikh.in/labs' },
+  ],
+};
+
 export default function Labs() {
   const [openTool, setOpenTool] = useState(null);
 
-  useEffect(() => { document.title = 'Labs | Moin Sheikh'; }, []);
+  useSEO({
+    title: 'Labs | Moin Sheikh — Interactive Web Experiments',
+    description: 'Explore interactive browser experiments by Moin Sheikh — generative art, palette generators, and reaction time tools. All client-side, zero APIs.',
+    path: '/labs',
+  });
 
   const handleToggle = (toolId) => {
     setOpenTool(prev => prev === toolId ? null : toolId);
   };
 
   return (
-    <main style={{ background: '#000', minHeight: '100vh', fontFamily: 'var(--sans)' }}>
+    <main style={{ background: '#000', minHeight: '100vh', fontFamily: 'var(--sans)' }} aria-label="Moin Sheikh Labs — interactive experiments">
       <style>{STYLES}</style>
+      <JsonLd schema={labsSchema} id="json-ld-labs" />
 
       {/* ── Hero ── */}
       <PageHero

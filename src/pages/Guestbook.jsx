@@ -9,6 +9,8 @@ import {
 import PageHero from '../components/PageHero';
 import Footer from '../components/Footer';
 import { supabase } from '../lib/supabase';
+import { useSEO } from '../hooks/useSEO';
+import JsonLd from '../components/JsonLd';
 
 /* ─── Injected global styles ──────────────────────────────────── */
 const gbStyles = `
@@ -799,8 +801,11 @@ export default function Guestbook() {
   const [visibleCount, setVisibleCount]      = useState(10);
   const PAGE_SIZE = 10;
 
-  /* ── Page title ─── */
-  useEffect(() => { document.title = 'Guestbook | Moin Sheikh'; }, []);
+  useSEO({
+    title: 'Guestbook | Moin Sheikh — Leave a Message',
+    description: 'Sign Moin Sheikh’s guestbook. Leave a message, share your thoughts, or just say hi. Connect with an AI developer and full-stack engineer from Nagpur.',
+    path: '/guestbook',
+  });
 
   /* ── Fetch Supabase profile when Clerk user is known ─── */
   useEffect(() => {

@@ -1,0 +1,29 @@
+{
+  "name": "Moin Sheikh — AI & Full-Stack Developer",
+  "short_name": "Moin Sheikh",
+  "description": "Portfolio of Moin Sheikh — AI developer and full-stack engineer from Nagpur, India. Building intelligent web systems and modern digital products.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "lang": "en",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/fav.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/fav.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["portfolio", "technology", "developer"],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useSEO } from '../hooks/useSEO';
 import PageHero from './PageHero';
 import Footer from './Footer';
 
@@ -14,15 +14,13 @@ export default function LegalPage({
   body,
   metaTitle,
   metaDescription,
+  metaPath,
 }) {
-  useEffect(() => {
-    document.title = metaTitle;
-    const descriptionTag = document.querySelector('meta[name="description"]');
-
-    if (descriptionTag) {
-      descriptionTag.setAttribute('content', metaDescription);
-    }
-  }, [metaDescription, metaTitle]);
+  useSEO({
+    title: metaTitle,
+    description: metaDescription,
+    path: metaPath,
+  });
 
   return (
     <main style={{ background: '#000', color: '#f5f5f5', minHeight: '100vh' }}>
