@@ -315,7 +315,10 @@ function VisitorsCard() {
                     e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
                 }}
             >
-                Sign Guestbook <span style={{ fontSize: 15 }}>→</span>
+               <a href="/guestbook" style={{ color: 'inherit', textDecoration: 'none' }}>
+                    Sign Guestbook
+                </a>
+                <span style={{ fontSize: 15 }}>→</span>
             </motion.button>
         </div>
     );
