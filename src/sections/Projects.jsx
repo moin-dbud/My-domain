@@ -117,7 +117,7 @@ function useProjects() {
 
 /* ─── Injected CSS ──────────────────────────────────────────────────────── */
 const injectStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Playfair+Display:ital@1&display=swap');
+  
 
   .vs-pill {
     display: inline-flex;

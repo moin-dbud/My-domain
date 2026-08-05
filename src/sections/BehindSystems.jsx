@@ -519,7 +519,7 @@ export default function BehindSystems() {
             margin: 0,
         }}>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital@1&display=swap');
+                
                 .bs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
                 @media (max-width: 960px) {
                     .bs-grid { grid-template-columns: repeat(2, 1fr); }

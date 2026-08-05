@@ -57,7 +57,7 @@ const mobileNavStyles = `
 
 /* ─── Injected global styles ─────────────────────────────── */
 const navbarStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Inter:wght@300;400;500;600&display=swap');
+  
 
   .nav-anim { animation: fadeUpSoft 0.7s ease-out 0s both; }
 

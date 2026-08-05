@@ -1,6 +1,5 @@
 import { createContext, useContext, useCallback, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
 /* ─────────────────────────────────────────────────────────────────
    Context
@@ -61,23 +60,20 @@ export function FloodTransitionProvider({ children }) {
 export function PageTransition({ children }) {
     const { isExiting } = useFloodNavigate();
 
+    const base = {
+        transition: `transform ${DURATION}s cubic-bezier(0.22, 1, 0.36, 1), opacity ${DURATION}s cubic-bezier(0.22, 1, 0.36, 1)`,
+        willChange: 'transform, opacity',
+        background: '#000',
+        minHeight: '100vh',
+    };
+
+    const style = isExiting
+        ? { ...base, transform: 'translateY(-18px)', opacity: 0 }
+        : { ...base, transform: 'translateY(0)', opacity: 1 };
+
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={
-                isExiting
-                    ? { opacity: 0, y: -18 }   // slide up & fade out
-                    : { opacity: 1, y: 0 }     // settle into place
-            }
-            transition={{ duration: DURATION, ease: EASE }}
-            style={{
-                willChange: 'transform, opacity',
-                /* Ensure no white ever bleeds through */
-                background: '#000',
-                minHeight: '100vh',
-            }}
-        >
+        <div style={style}>
             {children}
-        </motion.div>
+        </div>
     );
 }

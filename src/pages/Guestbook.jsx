@@ -14,7 +14,7 @@ import JsonLd from '../components/JsonLd';
 
 /* ─── Injected global styles ──────────────────────────────────── */
 const gbStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital@1&family=Montserrat:wght@900&display=swap');
+  
 
   * { box-sizing: border-box; }
 

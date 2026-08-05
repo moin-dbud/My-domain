@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 /* ─── Injected styles ─────────────────────────────────────────── */
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+  
 
   @keyframes aiCursor {
     0%, 100% { opacity: 1; }

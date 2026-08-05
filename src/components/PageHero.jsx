@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 
 /* ─── Animation Variants ───────────────────────────────────────── */
 const fadeUp = (delay = 0) => ({
@@ -15,8 +14,6 @@ const fadeUp = (delay = 0) => ({
 });
 
 const heroStyles = `
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Playfair+Display:ital@1&family=Inter:wght@300;400;500;600&display=swap');
-
   @keyframes moinFadeIn {
     0%   { opacity: 0; }
     100% { opacity: 1; }
@@ -129,13 +126,7 @@ export default function PageHero({ title, subtitle, highlight }) {
                 </div>
             </div>
 
-            {/* ── Google Fonts (idempotent if already loaded) ── */}
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Playfair+Display:ital@1&display=swap');
-                @media (max-width: 480px) {
-                    .page-hero-title { letter-spacing: -0.02em !important; }
-                }
-            `}</style>
+            {/* Fonts are consolidated in index.html to avoid duplicate, render-blocking imports. */}
         </section>
         </>
     );

@@ -14,7 +14,7 @@ marked.setOptions({ breaks: true, gfm: true });
 
 /* ─── Injected Styles ──────────────────────────────────────────── */
 const blogDetailStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@900&display=swap');
+  
 
   .blog-prose {
     font-family: 'Lora', Georgia, 'Times New Roman', serif;

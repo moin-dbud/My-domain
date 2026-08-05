@@ -10,7 +10,7 @@ import JsonLd from '../components/JsonLd';
 
 /* ─── Injected global styles ─────────────────────────────────────────── */
 const STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Playfair+Display:ital@1&display=swap');
+  
 
   * { box-sizing: border-box; }
 

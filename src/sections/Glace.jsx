@@ -181,7 +181,7 @@ export default function Glace({ label, headline, highlight, description, final }
             boxSizing: 'border-box',
         }}>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital@1&display=swap');
+                
                 @media (max-width: 768px) {
                     .glace-grid { flex-direction: column !important; }
                     .glace-image-col { margin-top: 64px !important; align-items: center !important; }

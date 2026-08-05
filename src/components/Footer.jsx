@@ -3,7 +3,7 @@ import { motion, useInView } from 'framer-motion';
 
 /* ─── Injected Styles ──────────────────────────────────────────── */
 const footerStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital@1&family=Montserrat:wght@900&display=swap');
+  
 
   @keyframes footerRingRotate {
     0%   { transform: rotate(0deg); }

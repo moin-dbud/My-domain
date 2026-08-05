@@ -1,13 +1,14 @@
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/JsonLd';
 import Hero from '../sections/Hero';
+import React, { Suspense } from 'react';
 import About from '../sections/About';
-import Projects from '../sections/Projects';
-import AIPlayground from '../sections/AI-Playground';
-import Skills from '../sections/Skills';
-import Glace from '../sections/Glace';
-import BehindSystems from '../sections/BehindSystems';
-import Footer from '../components/Footer';
+const Projects = React.lazy(() => import('../sections/Projects'));
+const AIPlayground = React.lazy(() => import('../sections/AI-Playground'));
+const Skills = React.lazy(() => import('../sections/Skills'));
+const Glace = React.lazy(() => import('../sections/Glace'));
+const BehindSystems = React.lazy(() => import('../sections/BehindSystems'));
+const Footer = React.lazy(() => import('../components/Footer'));
 
 /* ── Structured data for the home page ── */
 const homeSchema = [
@@ -84,18 +85,20 @@ export default function Home() {
       <JsonLd schema={homeSchema} id="json-ld-home" />
       <Hero />
       <About />
-      <Projects />
-      <AIPlayground />
-      <Skills />
-      <Glace
-        label="A Quick Glance"
-        headline="Building the bridge between"
-        highlight="intelligent systems"
-        description="I'm Moin Sheikh, an AI developer and web innovator focused on turning ambitious ideas into intelligent digital products. I specialize in building full-stack applications powered by modern AI tools, combining thoughtful design with scalable engineering. My work sits at the intersection of AI and software systems. From intelligent learning platforms to productivity tools, I build products that solve real problems and deliver practical value. I'm passionate about shipping real systems — not just prototypes — and continuously exploring how AI can make software more useful, adaptive, and human-centric."
-        final="My goal is simple: build systems that think, scale, and create impact."
-      />
-      <BehindSystems />
-      <Footer />
+      <Suspense fallback={<div aria-hidden="true" />}>
+        <Projects />
+        <AIPlayground />
+        <Skills />
+        <Glace
+          label="A Quick Glance"
+          headline="Building the bridge between"
+          highlight="intelligent systems"
+          description="I'm Moin Sheikh, an AI developer and web innovator focused on turning ambitious ideas into intelligent digital products. I specialize in building full-stack applications powered by modern AI tools, combining thoughtful design with scalable engineering. My work sits at the intersection of AI and software systems. I build products that solve real problems and deliver practical value. I'm passionate about shipping real systems — not just prototypes — and continuously exploring how AI can make software more useful, adaptive, and human-centric."
+          final="My goal is simple: build systems that think, scale, and create impact."
+        />
+        <BehindSystems />
+        <Footer />
+      </Suspense>
     </main>
   );
 }

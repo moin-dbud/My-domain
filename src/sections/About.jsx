@@ -11,6 +11,8 @@ import { GitHubCalendar } from 'react-github-calendar';
 /* ═══════════════════════════════════════════════════════════
    PHOTO ARC WHEEL  (unchanged)
 ═══════════════════════════════════════════════════════════ */
+import OptimizedImage from '../components/OptimizedImage'
+
 function SceneContent({ scene }) {
   const images = {
     image1: "/image1.webp", image2: "/image2.webp", image3: "/image3.webp",
@@ -18,11 +20,9 @@ function SceneContent({ scene }) {
     image7: "/image7.webp", image8: "/image8.webp", image9: "/image9.png",
     image10: "/image10.webp",
   };
+  const src = images[scene];
   return (
-    <img src={images[scene]} alt="" draggable="false"
-      className="w-full h-full object-cover object-[center_30%]"
-      onError={e => { e.currentTarget.style.display = "none"; }}
-    />
+    <OptimizedImage src={src} alt="" width={140} height={210} className="w-full h-full object-cover object-[center_30%]" />
   );
 }
 

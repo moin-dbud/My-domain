@@ -1,44 +1,71 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from "@vercel/speed-insights/react"
+import React, { Suspense, useEffect, useState } from 'react';
+// Keep Home eager (hero + navbar should load immediately)
 import Home from './pages/Home';
-import About from './pages/About';
-import Work from './pages/Work';
-import Blogs from './pages/Blogs';
-import BlogDetail from './pages/BlogDetail';
-import Links from './pages/Links';
-import Guestbook from './pages/Guestbook';
-import Labs from './pages/Labs';
-import BookACall from './pages/BookACall';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
+// Keep Navbar and Home eager; lazy-load other pages
+
+// Lazy-load secondary routes to reduce initial JS
+const About = React.lazy(() => import('./pages/About'));
+const Work = React.lazy(() => import('./pages/Work'));
+const Blogs = React.lazy(() => import('./pages/Blogs'));
+const BlogDetail = React.lazy(() => import('./pages/BlogDetail'));
+const Links = React.lazy(() => import('./pages/Links'));
+const Guestbook = React.lazy(() => import('./pages/Guestbook'));
+const Labs = React.lazy(() => import('./pages/Labs'));
+const BookACall = React.lazy(() => import('./pages/BookACall'));
+const Privacy = React.lazy(() => import('./pages/Privacy'));
+const Terms = React.lazy(() => import('./pages/Terms'));
 import SmoothScroll from './components/SmoothScroll';
 import Navbar from './components/Navbar';
 import { FloodTransitionProvider, PageTransition } from './components/PageTransition';
 
 function App() {
+  const [AnalyticsComp, setAnalyticsComp] = useState(null);
+  const [SpeedComp, setSpeedComp] = useState(null);
+
+  useEffect(() => {
+    // Load analytics and SpeedInsights only after initial render to avoid blocking
+    let mounted = true;
+    (async () => {
+      try {
+        const mod = await import('@vercel/analytics/react');
+        const speed = await import('@vercel/speed-insights/react');
+        if (mounted) {
+          setAnalyticsComp(() => mod.Analytics);
+          setSpeedComp(() => speed.SpeedInsights);
+        }
+      } catch (e) {
+        // optional analytics failure shouldn't block app
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+  const LazyAnalytics = AnalyticsComp;
+  const LazySpeed = SpeedComp;
   return (
     <SmoothScroll>
       <BrowserRouter>
         <FloodTransitionProvider>
           <Navbar />
 
-          <Routes>
-            <Route path="/" element={<PageTransition><Home /></PageTransition>} />
-            <Route path="/about" element={<PageTransition><About /></PageTransition>} />
-            <Route path="/work" element={<PageTransition><Work /></PageTransition>} />
-            <Route path="/blogs" element={<PageTransition><Blogs /></PageTransition>} />
-            <Route path="/blog/:slug" element={<PageTransition><BlogDetail /></PageTransition>} />
-            <Route path="/links" element={<PageTransition><Links /></PageTransition>} />
-            <Route path="/guestbook" element={<PageTransition><Guestbook /></PageTransition>} />
-            <Route path="/labs" element={<PageTransition><Labs /></PageTransition>} />
-            <Route path="/book-a-call" element={<PageTransition><BookACall /></PageTransition>} />
-            <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
-            <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
-          </Routes>
+          <Suspense fallback={<div aria-hidden="true" /> }>
+            <Routes>
+              <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+              <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+              <Route path="/work" element={<PageTransition><Work /></PageTransition>} />
+              <Route path="/blogs" element={<PageTransition><Blogs /></PageTransition>} />
+              <Route path="/blog/:slug" element={<PageTransition><BlogDetail /></PageTransition>} />
+              <Route path="/links" element={<PageTransition><Links /></PageTransition>} />
+              <Route path="/guestbook" element={<PageTransition><Guestbook /></PageTransition>} />
+              <Route path="/labs" element={<PageTransition><Labs /></PageTransition>} />
+              <Route path="/book-a-call" element={<PageTransition><BookACall /></PageTransition>} />
+              <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
+              <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
+            </Routes>
+          </Suspense>
+          {LazyAnalytics ? <LazyAnalytics /> : null}
+          {LazySpeed ? <LazySpeed /> : null}
         </FloodTransitionProvider>
-        <Analytics />
-        <SpeedInsights />
       </BrowserRouter>
     </SmoothScroll>
   );
