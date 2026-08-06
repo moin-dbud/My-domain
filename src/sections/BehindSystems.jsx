@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import LifeSnapshotCard from '../components/LifeSnapshotCard';
 
 /* ─── Helpers ─────────────────────────────────────────────────── */
@@ -226,6 +227,8 @@ const DUMMY_AVATARS = [
 ];
 
 function VisitorsCard() {
+    const navigate = useNavigate();
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             {/* Label */}
@@ -306,6 +309,7 @@ function VisitorsCard() {
                     fontFamily: "'Inter',sans-serif",
                     transition: 'background 0.2s, border-color 0.2s',
                 }}
+                onClick={() => navigate('/guestbook')}
                 onMouseEnter={e => {
                     e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
                     e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)';
@@ -315,9 +319,7 @@ function VisitorsCard() {
                     e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
                 }}
             >
-               <a href="/guestbook" style={{ color: 'inherit', textDecoration: 'none' }}>
-                    Sign Guestbook
-                </a>
+                <span>Sign Guestbook</span>
                 <span style={{ fontSize: 15 }}>→</span>
             </motion.button>
         </div>

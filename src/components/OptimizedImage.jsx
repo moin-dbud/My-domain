@@ -1,13 +1,8 @@
 import React from 'react'
 
-// Small image wrapper that prefers AVIF/WebP where available,
-// adds width/height to avoid CLS and uses lazy loading by default.
+// Small image wrapper that keeps the original asset as the reliable fallback.
+// This avoids broken rendering when AVIF/WebP variants are missing or were renamed.
 export default function OptimizedImage({ src, alt = '', width, height, className, sizes = '100vw', priority = false, style }) {
-  const ext = src.split('.').pop().toLowerCase();
-  const base = src.replace(/\.(png|jpe?g|webp|avif)$/i, '');
-  const avif = `${base}.avif`;
-  const webp = `${base}.webp`;
-
   const imgProps = {
     src,
     alt,
@@ -16,19 +11,14 @@ export default function OptimizedImage({ src, alt = '', width, height, className
     className,
     style: { display: 'block', width: '100%', height: '100%', objectFit: 'cover', ...style },
     loading: priority ? undefined : 'lazy',
+    decoding: 'async',
   };
 
-  // Use fetchpriority when supported for above-the-fold images
   if (priority) imgProps.fetchPriority = 'high';
 
-  return (
-    <picture>
-      {/* AVIF */}
-      <source type="image/avif" srcSet={avif} sizes={sizes} />
-      {/* WebP */}
-      <source type="image/webp" srcSet={webp} sizes={sizes} />
-      {/* Fallback */}
-      <img {...imgProps} />
-    </picture>
-  );
+  if (typeof src === 'string' && /\.(webp|avif)$/i.test(src)) {
+    imgProps.srcSet = src;
+  }
+
+  return <img {...imgProps} />;
 }
