@@ -800,6 +800,76 @@ function MessageModal({ clerkUser, profile, onClose, onPosted }) {
   );
 }
 
+/* ─── Auto-sync Clerk user profile & username into Supabase ─────────── */
+async function syncClerkProfile(user) {
+  if (!user) return null;
+
+  // 1. Check existing profile record in guestbook_clerk_profiles
+  const { data: existing } = await supabase
+    .from('guestbook_clerk_profiles')
+    .select('username, avatar_url')
+    .eq('clerk_id', user.id)
+    .maybeSingle();
+
+  if (existing && existing.username) {
+    if (user.imageUrl && user.imageUrl !== existing.avatar_url) {
+      await supabase
+        .from('guestbook_clerk_profiles')
+        .update({ avatar_url: user.imageUrl })
+        .eq('clerk_id', user.id);
+    }
+    return existing;
+  }
+
+  // 2. Extract best username from Clerk profile
+  let rawUsername =
+    user.username ||
+    user.firstName ||
+    user.emailAddresses?.[0]?.emailAddress?.split('@')[0] ||
+    `user_${user.id.slice(-6)}`;
+
+  // Sanitize for gcp_username_format constraint: ^[a-zA-Z0-9_\-]{3,20}$
+  let cleanUsername = rawUsername.replace(/[^a-zA-Z0-9_\-]/g, '');
+  if (cleanUsername.length < 3) {
+    cleanUsername = `${cleanUsername}user`.slice(0, 20);
+  }
+  if (cleanUsername.length > 20) {
+    cleanUsername = cleanUsername.slice(0, 20);
+  }
+
+  // 3. Save username to Supabase database table
+  let targetUsername = cleanUsername;
+  let attempts = 0;
+  let savedProfile = null;
+
+  while (attempts < 3 && !savedProfile) {
+    const { data, error } = await supabase
+      .from('guestbook_clerk_profiles')
+      .upsert({
+        clerk_id: user.id,
+        username: targetUsername,
+        avatar_url: user.imageUrl || null,
+        full_name: user.fullName || user.firstName || null,
+      }, { onConflict: 'clerk_id' })
+      .select('username, avatar_url')
+      .maybeSingle();
+
+    if (!error && data) {
+      savedProfile = data;
+    } else if (error && error.code === '23505') {
+      // Username collision: append random suffix
+      const suffix = Math.floor(100 + Math.random() * 900);
+      const base = cleanUsername.slice(0, 20 - `${suffix}`.length - 1);
+      targetUsername = `${base}_${suffix}`;
+      attempts++;
+    } else {
+      break;
+    }
+  }
+
+  return savedProfile || { username: targetUsername, avatar_url: user.imageUrl || null };
+}
+
 /* ═══════════════════════════════════════════════════════════════
    MAIN GUESTBOOK PAGE
    ═══════════════════════════════════════════════════════════════ */
@@ -821,20 +891,22 @@ export default function Guestbook() {
     path: '/guestbook',
   });
 
-  /* ── Fetch Supabase profile when Clerk user is known ─── */
+  /* ── Auto-sync & fetch Supabase profile when Clerk user is authenticated ─── */
   useEffect(() => {
-    if (!isLoaded || !isSignedIn || !user) return;
+    if (!isLoaded || !isSignedIn || !user) {
+      setProfile(null);
+      setLoadingProfile(false);
+      return;
+    }
     let cancelled = false;
-    supabase
-      .from('guestbook_clerk_profiles')
-      .select('username, avatar_url')
-      .eq('clerk_id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (cancelled) return;
-        setProfile(data || null);
-        setLoadingProfile(false);
-      });
+    setLoadingProfile(true);
+
+    syncClerkProfile(user).then((prof) => {
+      if (cancelled) return;
+      setProfile(prof);
+      setLoadingProfile(false);
+    });
+
     return () => { cancelled = true; };
   }, [isLoaded, isSignedIn, user]);
 
@@ -854,7 +926,6 @@ export default function Guestbook() {
   /* ── CTA click logic ─── */
   const handleCTA = () => {
     if (!isSignedIn) { setModal('auth'); return; }
-    if (!profile)    { setModal('username'); return; }
     setModal('message');
   };
 
@@ -863,8 +934,8 @@ export default function Guestbook() {
     setModal('message');
   };
 
-  /* ── Derived label ─── */
-  const userLabel = profile?.username || user?.firstName || user?.emailAddresses?.[0]?.emailAddress?.split('@')[0] || null;
+  /* ── Derived display username ─── */
+  const userLabel = profile?.username || user?.username || user?.firstName || 'Guest';
   const isAuthLoading = !isLoaded || (isSignedIn && loadingProfile);
 
   return (
@@ -931,7 +1002,7 @@ export default function Guestbook() {
                     fontSize: 12, color: 'rgba(255,255,255,0.35)',
                     fontFamily: "'Inter', sans-serif",
                   }}>
-                    {user?.primaryEmailAddress?.emailAddress || 'Authenticated via Clerk'}
+                    @{userLabel}
                   </span>
                 </div>
 
@@ -995,10 +1066,8 @@ export default function Guestbook() {
               <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.32)', lineHeight: 1.5 }}>
                 {!isLoaded
                   ? 'Loading…'
-                  : isSignedIn && profile
-                  ? `Drop a message as ${profile.username} →`
-                  : isSignedIn && !profile
-                  ? 'Pick a username to continue →'
+                  : isSignedIn
+                  ? `Drop a message as @${userLabel} →`
                   : 'Sign in with Clerk to sign my wall →'
                 }
               </p>
