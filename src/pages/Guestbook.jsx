@@ -453,7 +453,7 @@ function AuthModal({ onClose }) {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {/* Clerk's SignInButton opens its own modal on top */}
-          <SignInButton mode="modal" afterSignInUrl="/guestbook">
+          <SignInButton mode="modal" fallbackRedirectUrl="/guestbook" forceRedirectUrl="/guestbook">
             <button className="gb-auth-btn" id="gb-clerk-signin">
               <UserIcon />
               Sign in
@@ -469,7 +469,7 @@ function AuthModal({ onClose }) {
             <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
           </div>
 
-          <SignUpButton mode="modal" afterSignUpUrl="/guestbook">
+          <SignUpButton mode="modal" fallbackRedirectUrl="/guestbook" forceRedirectUrl="/guestbook">
             <button
               className="gb-auth-btn"
               id="gb-clerk-signup"
