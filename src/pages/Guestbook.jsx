@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import {
   useUser,
@@ -163,6 +164,23 @@ const gbStyles = `
     border-radius: 24px; padding: 36px 32px;
     box-shadow: 0 40px 100px rgba(0,0,0,0.9);
     position: relative;
+  }
+
+  /* Fix Clerk modal backdrop & content positioning so popup never causes viewport scroll */
+  .cl-modalBackdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: rgba(0, 0, 0, 0.78) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+  .cl-modalContent {
+    margin: auto !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
   }
 
   /* Signature card */
@@ -417,7 +435,7 @@ function SignatureCard({ entry, index }) {
 /* ═══════════════════════════════════════════════════════════════
    MODAL 1 — Sign-in prompt (uses Clerk's managed UI)
    ═══════════════════════════════════════════════════════════════ */
-function AuthModal({ onClose }) {
+function AuthModal({ onClose, onSignIn, onSignUp }) {
   return (
     <div className="gb-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <Motion.div
@@ -452,13 +470,10 @@ function AuthModal({ onClose }) {
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {/* Clerk's SignInButton opens its own modal on top */}
-          <SignInButton mode="modal" fallbackRedirectUrl="/guestbook" forceRedirectUrl="/guestbook">
-            <button className="gb-auth-btn" id="gb-clerk-signin">
-              <UserIcon />
-              Sign in
-            </button>
-          </SignInButton>
+          <button className="gb-auth-btn" id="gb-clerk-signin" onClick={onSignIn}>
+            <UserIcon />
+            Sign in
+          </button>
 
           {/* Divider */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -469,15 +484,14 @@ function AuthModal({ onClose }) {
             <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
           </div>
 
-          <SignUpButton mode="modal" fallbackRedirectUrl="/guestbook" forceRedirectUrl="/guestbook">
-            <button
-              className="gb-auth-btn"
-              id="gb-clerk-signup"
-              style={{ background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.16)' }}
-            >
-              Create account
-            </button>
-          </SignUpButton>
+          <button
+            className="gb-auth-btn"
+            id="gb-clerk-signup"
+            style={{ background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.16)' }}
+            onClick={onSignUp}
+          >
+            Create account
+          </button>
         </div>
 
         <p style={{
@@ -791,7 +805,7 @@ function MessageModal({ clerkUser, profile, onClose, onPosted }) {
    ═══════════════════════════════════════════════════════════════ */
 export default function Guestbook() {
   const { isLoaded, isSignedIn, user } = useUser();
-  const { signOut } = useClerk();
+  const { openSignIn, openSignUp, signOut } = useClerk();
 
   const [entries, setEntries]               = useState([]);
   const [loadingEntries, setLoadingEntries]  = useState(true);
@@ -1135,33 +1149,47 @@ export default function Guestbook() {
 
       <Footer />
 
-      {/* ── Modals ── */}
-      <AnimatePresence>
-        {modal === 'auth' && (
-          <AuthModal key="auth" onClose={() => setModal('none')} />
-        )}
-        {modal === 'username' && isSignedIn && user && (
-          <UsernameModal
-            key="username"
-            clerkUser={user}
-            onComplete={handleUsernameComplete}
-            onClose={() => setModal('none')}
-          />
-        )}
-        {modal === 'message' && isSignedIn && user && profile && (
-          <MessageModal
-            key="message"
-            clerkUser={user}
-            profile={profile}
-            onClose={() => setModal('none')}
-            onPosted={(entry) => {
-              // Optimistic UI — show immediately, will show after admin approval for others
-              setEntries(prev => [entry, ...prev]);
-              setModal('none');
-            }}
-          />
-        )}
-      </AnimatePresence>
+      {/* ── Modals (rendered via Portal directly to document.body to ensure position:fixed attaches to window viewport) ── */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {modal === 'auth' && (
+            <AuthModal
+              key="auth"
+              onClose={() => setModal('none')}
+              onSignIn={() => {
+                setModal('none');
+                openSignIn({ forceRedirectUrl: '/guestbook', fallbackRedirectUrl: '/guestbook' });
+              }}
+              onSignUp={() => {
+                setModal('none');
+                openSignUp({ forceRedirectUrl: '/guestbook', fallbackRedirectUrl: '/guestbook' });
+              }}
+            />
+          )}
+          {modal === 'username' && isSignedIn && user && (
+            <UsernameModal
+              key="username"
+              clerkUser={user}
+              onComplete={handleUsernameComplete}
+              onClose={() => setModal('none')}
+            />
+          )}
+          {modal === 'message' && isSignedIn && user && profile && (
+            <MessageModal
+              key="message"
+              clerkUser={user}
+              profile={profile}
+              onClose={() => setModal('none')}
+              onPosted={(entry) => {
+                // Optimistic UI — show immediately, will show after admin approval for others
+                setEntries(prev => [entry, ...prev]);
+                setModal('none');
+              }}
+            />
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </main>
   );
 }
