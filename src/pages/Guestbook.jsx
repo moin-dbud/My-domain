@@ -715,7 +715,7 @@ function MessageModal({ clerkUser, profile, onClose, onPosted }) {
     }
 
     onPosted({
-      name:        profile.username,
+      name:        profile.full_name || profile.username,
       username:    profile.username,
       avatar_url:  profile.avatar_url || clerkUser.imageUrl || null,
       message:     trimmed,
@@ -724,6 +724,30 @@ function MessageModal({ clerkUser, profile, onClose, onPosted }) {
       is_pinned:   false,
       reaction:    null,
     });
+
+    // Send email confirmation to user & notification to site owner
+    const userEmail = clerkUser?.primaryEmailAddress?.emailAddress;
+    const userFullName =
+      profile?.full_name ||
+      clerkUser?.fullName ||
+      [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(' ') ||
+      profile?.username ||
+      'Guest';
+
+    if (userEmail) {
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'guestbook',
+          name: userFullName,
+          email: userEmail,
+          username: profile.username,
+          message: trimmed,
+        }),
+      }).catch(e => console.warn('Guestbook confirmation email error:', e));
+    }
+
     onClose();
   };
 
@@ -1035,15 +1059,6 @@ export default function Guestbook() {
                         fontFamily: "'Inter', sans-serif",
                       }}>
                         @{userHandle}
-                      </span>
-                      <span style={{
-                        fontSize: 11, color: 'rgba(255,255,255,0.38)',
-                        background: 'rgba(255,255,255,0.06)',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        borderRadius: 6, padding: '1px 7px',
-                        letterSpacing: '-0.01em',
-                      }}>
-                        Edit profile ✏️
                       </span>
                     </div>
                   </div>

@@ -250,18 +250,86 @@ function messageConfirmationTemplate({ name, message }) {
     return emailWrapper(content);
 }
 
+/* ─── Guestbook confirmation template (to user) ────────────── */
+function guestbookConfirmationTemplate({ name, username, message }) {
+    const preview = message.length > 250 ? message.substring(0, 250) + '…' : message;
+    const userHandle = username ? `@${username}` : `@${name.toLowerCase().replace(/\s+/g, '')}`;
+    const content = `
+      <!-- Hero banner -->
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+             style="background:linear-gradient(135deg,#0f0f1a 0%,#0a0a12 100%);padding:40px 36px 36px;">
+        <tr><td>
+          <div style="display:inline-block;width:52px;height:52px;background:rgba(74,222,128,0.12);border:1.5px solid rgba(74,222,128,0.3);border-radius:14px;text-align:center;line-height:52px;font-size:24px;margin-bottom:20px;">✍️</div>
+          <h1 style="margin:0 0 8px;font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.03em;line-height:1.2;">
+            Your signature is published!
+          </h1>
+          <p style="margin:0;font-size:15px;color:rgba(255,255,255,0.45);line-height:1.6;">
+            Hey ${name}, thank you for signing my guestbook! Your signature is now live.
+          </p>
+        </td></tr>
+      </table>
+
+      <!-- Message preview -->
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="padding:32px 36px 24px;">
+        <tr><td>
+          <p style="margin:0 0 12px;font-size:12px;color:${BRAND.muted};text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">
+            Your Signature
+          </p>
+          <div style="background:${BRAND.bg};border:1px solid ${BRAND.border};border-left:3px solid ${BRAND.green};border-radius:12px;padding:20px 24px;">
+            <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#fff;">
+              ${name} <span style="font-size:12px;font-weight:400;color:${BRAND.muted};">(${userHandle})</span>
+            </p>
+            <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7);line-height:1.75;font-style:italic;">
+              "${preview}"
+            </p>
+          </div>
+        </td></tr>
+      </table>
+
+      <!-- Status note -->
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="padding:0 36px 24px;">
+        <tr><td style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.15);border-radius:12px;padding:18px 20px;">
+          <p style="margin:0 0 6px;font-size:12px;font-weight:700;color:${BRAND.green};text-transform:uppercase;letter-spacing:0.08em;">Live on the site</p>
+          <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.45);line-height:1.6;">
+            Your message is now visible to everyone visiting <strong style="color:#888;">moinsheikh.in/guestbook</strong>.
+          </p>
+        </td></tr>
+      </table>
+
+      <!-- CTA -->
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="padding:8px 36px 36px;">
+        <tr><td align="center">
+          <a href="https://moinsheikh.in/guestbook"
+             style="display:inline-block;background:#fff;color:#000;font-size:14px;font-weight:700;
+                    text-decoration:none;padding:14px 36px;border-radius:999px;
+                    letter-spacing:-0.01em;">
+            View Guestbook Wall →
+          </a>
+        </td></tr>
+      </table>
+    `;
+    return emailWrapper(content);
+}
+
 /* ─── Owner notification template ─────────────────────────── */
-function ownerNotificationTemplate({ type, name, email, date, time, guests, note, message }) {
+function ownerNotificationTemplate({ type, name, email, username, date, time, guests, note, message }) {
     const isCall = type === 'call';
+    const isGuestbook = type === 'guestbook';
+    const title = isCall
+        ? '📅 New call booking!'
+        : isGuestbook
+        ? '✍️ New Guestbook Signature!'
+        : '✉️ New message received!';
+
     const content = `
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
              style="background:${isCall ? 'linear-gradient(135deg,#0f0f1a,#0a0a12)' : 'linear-gradient(135deg,#0d0d0d,#0a0a0a)'};padding:32px 36px 28px;">
         <tr><td>
           <h2 style="margin:0 0 6px;font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.02em;">
-            ${isCall ? '📅 New call booking!' : '✉️ New message received!'}
+            ${title}
           </h2>
           <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.4);">
-            From your portfolio contact form
+            ${isGuestbook ? 'From your website guestbook wall' : 'From your portfolio contact form'}
           </p>
         </td></tr>
       </table>
@@ -272,7 +340,7 @@ function ownerNotificationTemplate({ type, name, email, date, time, guests, note
 
             <tr><td style="padding:8px 0;border-bottom:1px solid ${BRAND.border};">
               <span style="font-size:11px;color:${BRAND.muted};text-transform:uppercase;letter-spacing:0.07em;font-weight:600;">Name</span>
-              <p style="margin:3px 0 0;font-size:14px;color:${BRAND.text};font-weight:600;">${name}</p>
+              <p style="margin:3px 0 0;font-size:14px;color:${BRAND.text};font-weight:600;">${name} ${username ? `(@${username})` : ''}</p>
             </td></tr>
 
             <tr><td style="padding:8px 0;border-bottom:1px solid ${BRAND.border};">
@@ -310,7 +378,7 @@ function ownerNotificationTemplate({ type, name, email, date, time, guests, note
 
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="padding:0 36px 36px;">
         <tr><td align="center">
-          <a href="mailto:${email}?subject=Re: ${isCall ? `Your call on ${date}` : 'Your message'}"
+          <a href="mailto:${email}?subject=Re: ${isCall ? `Your call on ${date}` : isGuestbook ? 'Your guestbook entry' : 'Your message'}"
              style="display:inline-block;background:#fff;color:#000;font-size:14px;font-weight:700;
                     text-decoration:none;padding:13px 30px;border-radius:999px;letter-spacing:-0.01em;">
             Reply to ${name} →
@@ -335,18 +403,18 @@ export default async function handler(req, res) {
     }
 
     const body = req.body;
-    const { type, name, email, date, time, guests, note, message } = body;
+    const { type, name, email, username, date, time, guests, note, message } = body;
 
     if (!type || !name || !email) {
         return res.status(400).json({ error: 'Missing required fields: type, name, email.' });
     }
-    if (!['call', 'message'].includes(type)) {
-        return res.status(400).json({ error: 'Invalid type. Must be "call" or "message".' });
+    if (!['call', 'message', 'guestbook'].includes(type)) {
+        return res.status(400).json({ error: 'Invalid type. Must be "call", "message", or "guestbook".' });
     }
     if (type === 'call' && (!date || !time)) {
         return res.status(400).json({ error: 'Missing date or time for call booking.' });
     }
-    if (type === 'message' && !message) {
+    if ((type === 'message' || type === 'guestbook') && !message) {
         return res.status(400).json({ error: 'Missing message content.' });
     }
 
@@ -361,22 +429,30 @@ export default async function handler(req, res) {
 
     try {
         /* ── 1. Confirmation email → user ── */
-        const userHtml = type === 'call'
-            ? callConfirmationTemplate({ name, date, time, guests: guests || [], note: note || '' })
-            : messageConfirmationTemplate({ name, message });
+        let userHtml;
+        let subjectText;
+
+        if (type === 'call') {
+            userHtml = callConfirmationTemplate({ name, date, time, guests: guests || [], note: note || '' });
+            subjectText = `✅ Call confirmed — ${date} at ${time} IST`;
+        } else if (type === 'guestbook') {
+            userHtml = guestbookConfirmationTemplate({ name, username, message });
+            subjectText = `✍️ Your signature is live on Moin Sheikh's Guestbook!`;
+        } else {
+            userHtml = messageConfirmationTemplate({ name, message });
+            subjectText = `📩 Got your message, ${name}!`;
+        }
 
         await transporter.sendMail({
             from: `"Moin Sheikh" <${GMAIL_USER}>`,
             to: email,
-            subject: type === 'call'
-                ? `✅ Call confirmed — ${date} at ${time} IST`
-                : `📩 Got your message, ${name}!`,
+            subject: subjectText,
             html: userHtml,
         });
 
         /* ── 2. Notification email → owner ── */
         const ownerHtml = ownerNotificationTemplate({
-            type, name, email, date, time, guests: guests || [], note: note || '', message: message || '',
+            type, name, email, username, date, time, guests: guests || [], note: note || '', message: message || '',
         });
 
         await transporter.sendMail({
@@ -385,6 +461,8 @@ export default async function handler(req, res) {
             replyTo: email,
             subject: type === 'call'
                 ? `📅 New call booked by ${name} — ${date} at ${time}`
+                : type === 'guestbook'
+                ? `✍️ New Guestbook Signature from ${name} (@${username || 'user'})`
                 : `✉️ New message from ${name}`,
             html: ownerHtml,
         });
