@@ -6,6 +6,7 @@ import {
   useClerk,
   SignInButton,
   SignUpButton,
+  UserButton,
 } from '@clerk/clerk-react';
 import PageHero from '../components/PageHero';
 import Footer from '../components/Footer';
@@ -886,7 +887,7 @@ async function syncClerkProfile(user) {
    ═══════════════════════════════════════════════════════════════ */
 export default function Guestbook() {
   const { isLoaded, isSignedIn, user } = useUser();
-  const { openSignIn, openSignUp, signOut } = useClerk();
+  const { openSignIn, openSignUp, openUserProfile, signOut } = useClerk();
 
   const [entries, setEntries]               = useState([]);
   const [loadingEntries, setLoadingEntries]  = useState(true);
@@ -972,7 +973,7 @@ export default function Guestbook() {
         {/* ── Centered container for identity + CTA ── */}
         <div style={{ maxWidth: 740, margin: '0 auto' }}>
 
-          {/* ── Premium identity card ── */}
+          {/* ── Premium identity card (Clickable to edit profile via Clerk) ── */}
           {isLoaded && isSignedIn && !isAuthLoading && (
             <Motion.div
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -981,75 +982,101 @@ export default function Guestbook() {
               className="gb-identity-card"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 16, position: 'relative', zIndex: 1 }}>
-                {/* Avatar with ring */}
-                <div style={{ position: 'relative', flexShrink: 0 }}>
-                  <div style={{
-                    width: 48, height: 48, borderRadius: '50%',
-                    padding: 2,
-                    background: 'linear-gradient(135deg, rgba(74,222,128,0.6), rgba(74,222,128,0.1))',
-                  }}>
-                    <Avatar name={userFullName} imageUrl={user?.imageUrl} size={44} />
-                  </div>
-                  <span className="gb-identity-dot" style={{
-                    position: 'absolute', bottom: 1, right: 1,
-                    width: 11, height: 11,
-                    border: '2px solid #000',
-                  }} />
-                </div>
-
-                {/* Text block */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-                    <span style={{
-                      fontSize: 15, fontWeight: 700, color: 'white',
-                      letterSpacing: '-0.02em', fontFamily: "'Inter', sans-serif",
-                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    }}>
-                      {userFullName}
-                    </span>
-                    <span style={{
-                      fontSize: 10, fontWeight: 600, letterSpacing: '0.1em',
-                      textTransform: 'uppercase', color: '#4ade80',
-                      background: 'rgba(74,222,128,0.1)',
-                      border: '1px solid rgba(74,222,128,0.2)',
-                      borderRadius: 999, padding: '2px 8px', flexShrink: 0,
-                    }}>
-                      ● Online
-                    </span>
-                  </div>
-                  <span style={{
-                    fontSize: 12, color: 'rgba(255,255,255,0.35)',
-                    fontFamily: "'Inter', sans-serif",
-                  }}>
-                    @{userHandle}
-                  </span>
-                </div>
-
-                {/* Sign-out button */}
-                <button
-                  onClick={() => signOut()}
-                  id="gb-signout-btn"
+                
+                {/* Clickable profile block — opens Clerk User Profile editor modal */}
+                <div
+                  onClick={() => openUserProfile()}
+                  title="Click to edit profile in Clerk"
                   style={{
-                    flexShrink: 0, padding: '8px 16px', borderRadius: 10,
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-                    color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 500,
-                    fontFamily: "'Inter', sans-serif", cursor: 'pointer',
-                    transition: 'background 0.2s, color 0.2s, border-color 0.2s',
-                    letterSpacing: '-0.01em',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = 'rgba(255,80,80,0.08)';
-                    e.currentTarget.style.borderColor = 'rgba(255,80,80,0.2)';
-                    e.currentTarget.style.color = 'rgba(255,100,100,0.9)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
-                    e.currentTarget.style.color = 'rgba(255,255,255,0.45)';
+                    display: 'flex', alignItems: 'center', gap: 16,
+                    flex: 1, minWidth: 0, cursor: 'pointer',
+                    userSelect: 'none',
                   }}
                 >
-                  Sign out
-                </button>
+                  {/* Avatar with ring */}
+                  <div style={{ position: 'relative', flexShrink: 0 }}>
+                    <div style={{
+                      width: 48, height: 48, borderRadius: '50%',
+                      padding: 2,
+                      background: 'linear-gradient(135deg, rgba(74,222,128,0.6), rgba(74,222,128,0.1))',
+                    }}>
+                      <Avatar name={userFullName} imageUrl={user?.imageUrl} size={44} />
+                    </div>
+                    <span className="gb-identity-dot" style={{
+                      position: 'absolute', bottom: 1, right: 1,
+                      width: 11, height: 11,
+                      border: '2px solid #000',
+                    }} />
+                  </div>
+
+                  {/* Text block */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                      <span style={{
+                        fontSize: 15, fontWeight: 700, color: 'white',
+                        letterSpacing: '-0.02em', fontFamily: "'Inter', sans-serif",
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>
+                        {userFullName}
+                      </span>
+                      <span style={{
+                        fontSize: 10, fontWeight: 600, letterSpacing: '0.1em',
+                        textTransform: 'uppercase', color: '#4ade80',
+                        background: 'rgba(74,222,128,0.1)',
+                        border: '1px solid rgba(74,222,128,0.2)',
+                        borderRadius: 999, padding: '2px 8px', flexShrink: 0,
+                      }}>
+                        ● Online
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{
+                        fontSize: 12, color: 'rgba(255,255,255,0.35)',
+                        fontFamily: "'Inter', sans-serif",
+                      }}>
+                        @{userHandle}
+                      </span>
+                      <span style={{
+                        fontSize: 11, color: 'rgba(255,255,255,0.38)',
+                        background: 'rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: 6, padding: '1px 7px',
+                        letterSpacing: '-0.01em',
+                      }}>
+                        Edit profile ✏️
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right side — Clerk UserButton & Sign-out button */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                  <UserButton />
+                  <button
+                    onClick={() => signOut()}
+                    id="gb-signout-btn"
+                    style={{
+                      flexShrink: 0, padding: '8px 16px', borderRadius: 10,
+                      background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+                      color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 500,
+                      fontFamily: "'Inter', sans-serif", cursor: 'pointer',
+                      transition: 'background 0.2s, color 0.2s, border-color 0.2s',
+                      letterSpacing: '-0.01em',
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = 'rgba(255,80,80,0.08)';
+                      e.currentTarget.style.borderColor = 'rgba(255,80,80,0.2)';
+                      e.currentTarget.style.color = 'rgba(255,100,100,0.9)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.45)';
+                    }}
+                  >
+                    Sign out
+                  </button>
+                </div>
               </div>
             </Motion.div>
           )}
