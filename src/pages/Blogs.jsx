@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { useFloodNavigate } from '../components/PageTransition';
 import PageHero from '../components/PageHero';
 import Footer from '../components/Footer';

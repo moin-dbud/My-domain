@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import Footer from '../components/Footer';
 import { useSEO } from '../hooks/useSEO';
 import JsonLd from '../components/JsonLd';
