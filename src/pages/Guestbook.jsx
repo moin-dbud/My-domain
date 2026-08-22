@@ -804,21 +804,32 @@ function MessageModal({ clerkUser, profile, onClose, onPosted }) {
 async function syncClerkProfile(user) {
   if (!user) return null;
 
+  // Extract full name from Clerk (First + Last Name)
+  const clerkFullName =
+    user.fullName ||
+    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
+    null;
+
   // 1. Check existing profile record in guestbook_clerk_profiles
   const { data: existing } = await supabase
     .from('guestbook_clerk_profiles')
-    .select('username, avatar_url')
+    .select('username, full_name, avatar_url')
     .eq('clerk_id', user.id)
     .maybeSingle();
 
   if (existing && existing.username) {
-    if (user.imageUrl && user.imageUrl !== existing.avatar_url) {
+    const updatedFullName = clerkFullName || existing.full_name;
+    const updatedAvatarUrl = user.imageUrl || existing.avatar_url;
+    if (
+      (user.imageUrl && user.imageUrl !== existing.avatar_url) ||
+      (clerkFullName && clerkFullName !== existing.full_name)
+    ) {
       await supabase
         .from('guestbook_clerk_profiles')
-        .update({ avatar_url: user.imageUrl })
+        .update({ avatar_url: updatedAvatarUrl, full_name: updatedFullName })
         .eq('clerk_id', user.id);
     }
-    return existing;
+    return { ...existing, full_name: updatedFullName, avatar_url: updatedAvatarUrl };
   }
 
   // 2. Extract best username from Clerk profile
@@ -837,7 +848,7 @@ async function syncClerkProfile(user) {
     cleanUsername = cleanUsername.slice(0, 20);
   }
 
-  // 3. Save username to Supabase database table
+  // 3. Save username and full_name to Supabase database table
   let targetUsername = cleanUsername;
   let attempts = 0;
   let savedProfile = null;
@@ -848,10 +859,10 @@ async function syncClerkProfile(user) {
       .upsert({
         clerk_id: user.id,
         username: targetUsername,
+        full_name: clerkFullName,
         avatar_url: user.imageUrl || null,
-        full_name: user.fullName || user.firstName || null,
       }, { onConflict: 'clerk_id' })
-      .select('username, avatar_url')
+      .select('username, full_name, avatar_url')
       .maybeSingle();
 
     if (!error && data) {
@@ -867,7 +878,7 @@ async function syncClerkProfile(user) {
     }
   }
 
-  return savedProfile || { username: targetUsername, avatar_url: user.imageUrl || null };
+  return savedProfile || { username: targetUsername, full_name: clerkFullName, avatar_url: user.imageUrl || null };
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -934,8 +945,16 @@ export default function Guestbook() {
     setModal('message');
   };
 
-  /* ── Derived display username ─── */
-  const userLabel = profile?.username || user?.username || user?.firstName || 'Guest';
+  /* ── Derived display names ─── */
+  const userFullName =
+    profile?.full_name ||
+    user?.fullName ||
+    [user?.firstName, user?.lastName].filter(Boolean).join(' ') ||
+    profile?.username ||
+    user?.username ||
+    'Guest';
+
+  const userHandle = profile?.username || user?.username || 'guest';
   const isAuthLoading = !isLoaded || (isSignedIn && loadingProfile);
 
   return (
@@ -969,7 +988,7 @@ export default function Guestbook() {
                     padding: 2,
                     background: 'linear-gradient(135deg, rgba(74,222,128,0.6), rgba(74,222,128,0.1))',
                   }}>
-                    <Avatar name={userLabel} imageUrl={user?.imageUrl} size={44} />
+                    <Avatar name={userFullName} imageUrl={user?.imageUrl} size={44} />
                   </div>
                   <span className="gb-identity-dot" style={{
                     position: 'absolute', bottom: 1, right: 1,
@@ -986,7 +1005,7 @@ export default function Guestbook() {
                       letterSpacing: '-0.02em', fontFamily: "'Inter', sans-serif",
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>
-                      {userLabel || 'Guest'}
+                      {userFullName}
                     </span>
                     <span style={{
                       fontSize: 10, fontWeight: 600, letterSpacing: '0.1em',
@@ -1002,7 +1021,7 @@ export default function Guestbook() {
                     fontSize: 12, color: 'rgba(255,255,255,0.35)',
                     fontFamily: "'Inter', sans-serif",
                   }}>
-                    @{userLabel}
+                    @{userHandle}
                   </span>
                 </div>
 
@@ -1067,7 +1086,7 @@ export default function Guestbook() {
                 {!isLoaded
                   ? 'Loading…'
                   : isSignedIn
-                  ? `Drop a message as @${userLabel} →`
+                  ? `Drop a message as @${userHandle} →`
                   : 'Sign in with Clerk to sign my wall →'
                 }
               </p>
