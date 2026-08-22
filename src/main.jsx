@@ -35,7 +35,11 @@ if (!PUBLISHABLE_KEY) {
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/guestbook">
+    <ClerkProvider 
+      publishableKey={PUBLISHABLE_KEY} 
+      clerkJSUrl="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
+      afterSignOutUrl="/guestbook"
+    >
       <App />
     </ClerkProvider>
   </StrictMode>,
