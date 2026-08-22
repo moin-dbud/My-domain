@@ -13,6 +13,7 @@ const FALLBACK_PROJECTS = [
         desktop: { bg: '#0a0a0a', accent: '#a855f7' },
         mobile: { bg: '#0a0a0a', accent: '#a855f7', label: 'Build a Website' },
         images: { desktop: '/buildo-laptop.png', mobile: '/mobile-buildo.png' },
+        live_url: 'https://buildo.app', github_url: '',
     },
     {
         id: 1, title: 'MadeIt', category: 'Product Platform', color: '#f97316',
@@ -23,6 +24,7 @@ const FALLBACK_PROJECTS = [
         desktop: { bg: '#0f0a04', accent: '#f97316' },
         mobile: { bg: '#130c03', accent: '#f97316', label: 'My Projects' },
         images: { desktop: '/desktop-madeit.webp', mobile: '/mobile-madeit.webp' },
+        live_url: 'https://madeit.dev', github_url: '',
     },
     {
         id: 2, title: 'Nexora Learn AI', category: 'AI Education Platform', color: '#a855f7',
@@ -33,6 +35,7 @@ const FALLBACK_PROJECTS = [
         desktop: { bg: '#0d0814', accent: '#a855f7' },
         mobile: { bg: '#120a1a', accent: '#a855f7', label: 'Study Plan' },
         images: { desktop: '/desktop-nexora.webp', mobile: '/mobile-nexora.webp' },
+        live_url: 'https://nexora.ai', github_url: '',
     },
     {
         id: 3, title: 'LevelUp.dev', category: 'EdTech Platform', color: '#38bdf8',
@@ -43,6 +46,7 @@ const FALLBACK_PROJECTS = [
         desktop: { bg: '#03111a', accent: '#38bdf8' },
         mobile: { bg: '#051520', accent: '#38bdf8', label: 'My Courses' },
         images: { desktop: '/desktop-levelup.webp', mobile: '/mobile-levelup.webp' },
+        live_url: 'https://levelup.dev', github_url: '',
     },
     {
         id: 4, title: 'AI Resume Analyzer', category: 'AI Tool', color: '#e2e8f0',
@@ -53,6 +57,7 @@ const FALLBACK_PROJECTS = [
         desktop: { bg: '#0a0a0a', accent: '#94a3b8' },
         mobile: { bg: '#111', accent: '#94a3b8', label: 'Analyze Resume' },
         images: { desktop: '/desktop-resume.webp', mobile: '/mobile-resume.webp' },
+        live_url: 'https://resume-analyzer.ai', github_url: '',
     },
 ];
 
@@ -524,6 +529,40 @@ function MobileProjectCard({ project, index, total }) {
                     </div>
                 )}
 
+                {/* Mobile Preview Live Button */}
+                {(project.live_url || project.github_url) && (
+                    <div style={{ marginBottom: 16 }}>
+                        <a
+                            href={project.live_url || project.github_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                padding: '9px 18px',
+                                borderRadius: '8px',
+                                background: '#ffffff',
+                                color: '#000000',
+                                fontSize: '12px',
+                                fontFamily: "'Inter', sans-serif",
+                                fontWeight: 600,
+                                textDecoration: 'none',
+                                transition: 'all 0.2s ease',
+                                cursor: 'pointer',
+                            }}
+                            aria-label={`Preview ${project.title} live`}
+                        >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                            Preview Live
+                        </a>
+                    </div>
+                )}
+
 
             </div>
 
@@ -689,26 +728,31 @@ function InteractiveMockups({ project }) {
         mouseY.set(e.clientY - rect.top);
     };
 
-    const handleClick = () => {
-        const url = project.live_url || project.github_url;
-        if (url) {
-            window.open(url, '_blank', 'noopener,noreferrer');
-        }
-    };
+    const targetUrl = project.live_url || project.github_url;
 
     return (
-        <div
+        <a
             ref={containerRef}
+            href={targetUrl || '#'}
+            target={targetUrl ? '_blank' : '_self'}
+            rel="noopener noreferrer"
             onMouseMove={handleMouseMove}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            onClick={handleClick}
+            onClick={(e) => {
+                if (!targetUrl || targetUrl === '#') {
+                    e.preventDefault();
+                }
+            }}
             style={{
+                display: 'block',
                 position: 'relative',
                 width: '100%',
                 maxWidth: 560,
                 height: 320,
-                cursor: (project.live_url || project.github_url) ? 'pointer' : 'default',
+                cursor: targetUrl ? 'pointer' : 'default',
+                textDecoration: 'none',
+                color: 'inherit',
             }}
         >
             <MockupHoverBadge
@@ -746,7 +790,7 @@ function InteractiveMockups({ project }) {
             >
                 <DesktopMockup project={project} />
             </motion.div>
-        </div>
+        </a>
     );
 }
 
