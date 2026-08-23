@@ -133,6 +133,16 @@ const MORE_ITEMS = [
     {
         icon: (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L13.5 9L20 10.5L13.5 12L12 19L10.5 12L4 10.5L10.5 9L12 2Z" fill="#a855f7" stroke="none" />
+            </svg>
+        ),
+        title: 'AI Playground',
+        sub: 'Interact with AI systems',
+        route: '/playground',
+    },
+    {
+        icon: (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18" />
             </svg>
         ),
@@ -551,6 +561,7 @@ function MobileNav() {
         { label: 'Home', route: '/', icon: '○' },
         { label: 'About', route: '/about', icon: '◎' },
         { label: 'Work', route: '/work', icon: '▣' },
+        { label: 'AI Playground', route: '/playground', icon: '✦' },
         { label: 'Blogs', route: '/blogs', icon: '✦' },
         { label: 'Labs', route: '/labs', icon: '⬡' },
         { label: 'Links', route: '/links', icon: '⬢' },

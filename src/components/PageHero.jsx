@@ -100,8 +100,10 @@ export default function PageHero({ title, subtitle, highlight }) {
                     style={{
                         fontFamily: "'Montserrat', sans-serif",
                         fontWeight: 900,
-                        fontSize: 'clamp(62px, 13vw, 280px)',
+                        fontSize: title.length > 8 ? 'clamp(34px, 10vw, 240px)' : 'clamp(58px, 13vw, 280px)',
                         letterSpacing: '-0.02em',
+                        maxWidth: '100%',
+                        overflowWrap: 'break-word',
                     }}
                 >
                     {title}

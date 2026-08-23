@@ -1,5 +1,14 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import React, { Suspense, useEffect, useState } from 'react';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 // Keep Home eager (hero + navbar should load immediately)
 import Home from './pages/Home';
 // Keep Navbar and Home eager; lazy-load other pages
@@ -13,6 +22,7 @@ const Links = React.lazy(() => import('./pages/Links'));
 const Guestbook = React.lazy(() => import('./pages/Guestbook'));
 const Labs = React.lazy(() => import('./pages/Labs'));
 const BookACall = React.lazy(() => import('./pages/BookACall'));
+const Playground = React.lazy(() => import('./pages/Playground'));
 const Privacy = React.lazy(() => import('./pages/Privacy'));
 const Terms = React.lazy(() => import('./pages/Terms'));
 import SmoothScroll from './components/SmoothScroll';
@@ -45,6 +55,7 @@ function App() {
   return (
     <SmoothScroll>
       <BrowserRouter>
+        <ScrollToTop />
         <FloodTransitionProvider>
           <Navbar />
 
@@ -58,6 +69,7 @@ function App() {
               <Route path="/links" element={<PageTransition><Links /></PageTransition>} />
               <Route path="/guestbook" element={<PageTransition><Guestbook /></PageTransition>} />
               <Route path="/labs" element={<PageTransition><Labs /></PageTransition>} />
+              <Route path="/playground" element={<PageTransition><Playground /></PageTransition>} />
               <Route path="/book-a-call" element={<PageTransition><BookACall /></PageTransition>} />
               <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
               <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
