@@ -351,7 +351,7 @@ export default function Playground() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const chatBottomRef = useRef(null);
+  const conversationContainerRef = useRef(null);
 
   // Fetch project catalog from database via API
   useEffect(() => {
@@ -378,10 +378,10 @@ export default function Playground() {
     window.scrollTo(0, 0);
   }, []);
 
-  /* Scroll chat to bottom ONLY when messages exist */
+  /* Scroll internal conversation box to bottom ONLY (never scrolls outer window) */
   useEffect(() => {
-    if (messages.length > 0) {
-      chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messages.length > 0 && conversationContainerRef.current) {
+      conversationContainerRef.current.scrollTop = conversationContainerRef.current.scrollHeight;
     }
   }, [messages, loading]);
 
@@ -459,7 +459,7 @@ export default function Playground() {
       <JsonLd schema={playgroundSchema} id="json-ld-playground" />
 
       {/* ══════════════════════════════════════════════════════════════
-          HERO SECTION — Identical Canonical PageHero to About & Labs
+          HERO SECTION — Identical Canonical PageHero to About & Work
       ══════════════════════════════════════════════════════════════ */}
       <PageHero
         title="PLAYGROUND"
@@ -865,6 +865,7 @@ export default function Playground() {
 
           {/* Conversation Area */}
           <div
+            ref={conversationContainerRef}
             className="pg-conversation-area"
             data-lenis-prevent="true"
             data-lenis-prevent-wheel="true"
@@ -1095,7 +1096,6 @@ export default function Playground() {
               </div>
             )}
 
-            <div ref={chatBottomRef} />
           </div>
 
           {/* Input Bar */}

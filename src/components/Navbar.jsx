@@ -143,16 +143,6 @@ const MORE_ITEMS = [
     {
         icon: (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18" />
-            </svg>
-        ),
-        title: 'Labs',
-        sub: 'Experiments & tools',
-        route: '/labs',
-    },
-    {
-        icon: (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
             </svg>
@@ -255,8 +245,12 @@ function MoreButton() {
                             minWidth: '480px',
                         }}
                     >
-                        {/* Left — Labs promo */}
+                        {/* Left — AI Playground promo */}
                         <div
+                            onClick={(e) => {
+                                setOpenMore(false);
+                                floodNavigate(e, '/playground');
+                            }}
                             style={{
                                 background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
                                 padding: '28px 24px',
@@ -266,19 +260,19 @@ function MoreButton() {
                                 minHeight: '220px',
                                 position: 'relative',
                                 overflow: 'hidden',
+                                cursor: 'pointer',
                             }}
                         >
                             <div style={{ position: 'absolute', top: '20px', right: '20px', opacity: 0.25 }}>
                                 <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M9 3h6M9 3v6L4 18a2 2 0 0 0 1.8 2.9h12.4A2 2 0 0 0 20 18l-5-9V3" />
-                                    <path d="M6.1 14h11.8" />
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                                 </svg>
                             </div>
                             <span style={{ color: 'white', fontWeight: 700, fontSize: '22px', letterSpacing: '-0.02em', marginBottom: '6px' }}>
-                                Labs
+                                AI Playground
                             </span>
                             <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '13px', lineHeight: 1.45 }}>
-                                Experimental playground &amp; fun micro-tools
+                                Database-backed RAG assistant &amp; interactive AI systems
                             </span>
                         </div>
 
@@ -563,7 +557,6 @@ function MobileNav() {
         { label: 'Work', route: '/work', icon: '▣' },
         { label: 'AI Playground', route: '/playground', icon: '✦' },
         { label: 'Blogs', route: '/blogs', icon: '✦' },
-        { label: 'Labs', route: '/labs', icon: '⬡' },
         { label: 'Links', route: '/links', icon: '⬢' },
         { label: 'Guestbook', route: '/guestbook', icon: '✎' },
         { label: 'Book a Call', route: '/book-a-call', icon: '📅' },

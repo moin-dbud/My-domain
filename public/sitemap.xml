@@ -90,14 +90,6 @@
 
   <!-- ══ Secondary Pages ═════════════════════════════════════════ -->
 
-  <!-- Labs -->
-  <url>
-    <loc>https://moinsheikh.in/labs</loc>
-    <lastmod>2026-08-05</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
   <!-- Book a Call -->
   <url>
     <loc>https://moinsheikh.in/book-a-call</loc>

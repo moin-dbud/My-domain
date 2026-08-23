@@ -20,7 +20,6 @@ const Blogs = React.lazy(() => import('./pages/Blogs'));
 const BlogDetail = React.lazy(() => import('./pages/BlogDetail'));
 const Links = React.lazy(() => import('./pages/Links'));
 const Guestbook = React.lazy(() => import('./pages/Guestbook'));
-const Labs = React.lazy(() => import('./pages/Labs'));
 const BookACall = React.lazy(() => import('./pages/BookACall'));
 const Playground = React.lazy(() => import('./pages/Playground'));
 const Privacy = React.lazy(() => import('./pages/Privacy'));
@@ -68,7 +67,6 @@ function App() {
               <Route path="/blog/:slug" element={<PageTransition><BlogDetail /></PageTransition>} />
               <Route path="/links" element={<PageTransition><Links /></PageTransition>} />
               <Route path="/guestbook" element={<PageTransition><Guestbook /></PageTransition>} />
-              <Route path="/labs" element={<PageTransition><Labs /></PageTransition>} />
               <Route path="/playground" element={<PageTransition><Playground /></PageTransition>} />
               <Route path="/book-a-call" element={<PageTransition><BookACall /></PageTransition>} />
               <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
