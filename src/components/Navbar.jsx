@@ -248,8 +248,8 @@ function MoreButton() {
                         {/* Left — AI Playground promo */}
                         <div
                             onClick={(e) => {
-                                setOpenMore(false);
-                                floodNavigate(e, '/playground');
+                                setOpen(false);
+                                floodNavigate('/playground', e);
                             }}
                             style={{
                                 background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
