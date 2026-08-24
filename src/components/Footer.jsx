@@ -250,7 +250,7 @@ export default function Footer() {
 
     const socials = [
         { icon: <GithubIcon />, href: 'https://github.com/moin-dbud', label: 'GitHub' },
-        { icon: <LinkedinIcon />, href: 'https://www.linkedin.com/in/moin-build/', label: 'LinkedIn' },
+        { icon: <LinkedinIcon />, href: 'https://www.linkedin.com/in/moin-build/', label: 'LinkedIn Profile' },
         { icon: <TwitterIcon />, href: 'https://x.com/Moin_Sheikh09', label: 'Twitter' },
         { icon: <EmailIcon />, href: 'mailto:hello@moinsheikh.in', label: 'Email' },
     ];

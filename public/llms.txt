@@ -1,0 +1,28 @@
+# Moin Sheikh — AI & Full-Stack Developer
+
+> AI developer and full-stack engineer from Nagpur, India. Specializing in intelligent web systems, SaaS platforms, and AI-powered applications that solve real problems.
+
+## Summary
+
+Moin Sheikh builds full-stack applications powered by modern artificial intelligence, combining thoughtful design with scalable cloud engineering. He focuses on building production-grade digital products across web frameworks, machine learning APIs, and vector database retrieval systems.
+
+## Key Sections & Resources
+
+- [Home & Portfolio](https://moinsheikh.in/): Primary portfolio overview and featured work.
+- [About Moin](https://moinsheikh.in/#about): Philosophy, background, technical capabilities, and engineering values.
+- [Projects & Showcase](https://moinsheikh.in/#projects): Portfolio of products including Buildo AI, MadeIt, Nexora Learn AI, and LevelUp.dev.
+- [AI RAG Playground](https://moinsheikh.in/playground): Interactive Retrieval-Augmented Generation (RAG) system powered by Supabase, pgvector, and Gemini embeddings.
+- [Guestbook](https://moinsheikh.in/guestbook): Public interactive guestbook backed by Supabase and Clerk authentication.
+- [Social Links](https://moinsheikh.in/links): Direct links to social profiles and communication channels.
+
+## Core Technical Skills
+
+- **Frontend**: React, Next.js, Vite, Tailwind CSS, Framer Motion, JavaScript (ES6+), TypeScript.
+- **Backend & Database**: Node.js, Python, FastAPI, Express, PostgreSQL, Supabase, Prisma, pgvector.
+- **AI & ML**: Gemini API, OpenRouter, Embeddings, RAG Architectures, Vector Search.
+
+## External Profiles
+
+- [GitHub Profile](https://github.com/moin-dbud)
+- [LinkedIn Profile](https://www.linkedin.com/in/moin-build/)
+- [Twitter / X](https://x.com/Moin_Sheikh09)

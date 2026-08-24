@@ -16,8 +16,8 @@ import OptimizedImage from '../components/OptimizedImage'
 function SceneContent({ scene }) {
   const images = {
     image1: "/image1.webp", image2: "/image2.webp", image3: "/image3.webp",
-    image4: "/image4.png", image5: "/image5.webp", image6: "/image6.webp",
-    image7: "/image7.webp", image8: "/image8.webp", image9: "/image9.png",
+    image4: "/image4.webp", image5: "/image5.webp", image6: "/image6.webp",
+    image7: "/image7.webp", image8: "/image8.webp", image9: "/image9.webp",
     image10: "/image10.webp",
   };
   const src = images[scene];
@@ -154,12 +154,21 @@ function PhoneMockupsGroup() {
   const sRightY = useSpring(rightY, { stiffness: 45, damping: 20 });
   const sRightRot = useSpring(rightRot, { stiffness: 45, damping: 20 });
 
-  /* Detect mobile for phone layout */
-  const [isMobile, setIsMobile] = React.useState(() => window.innerWidth < 640);
+  const [isMobile, setIsMobile] = React.useState(() => typeof window !== 'undefined' ? window.innerWidth < 640 : false);
   React.useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 640);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    let timer = null;
+    const onResize = () => {
+      if (timer) return;
+      timer = setTimeout(() => {
+        timer = null;
+        setIsMobile(window.innerWidth < 640);
+      }, 100);
+    };
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => {
+      if (timer) clearTimeout(timer);
+      window.removeEventListener('resize', onResize);
+    };
   }, []);
 
   return (
@@ -620,9 +629,12 @@ function GitHubBentoCard({ cardBase, vignette }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [calTooltip, setCalTooltip] = useState({ visible: false, x: 0, y: 0, count: 0, date: '' });
+  const cardRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
+    let observer = null;
+
     async function fetchStats() {
       try {
         // Fetch user info + contribution calendar in parallel.
@@ -660,8 +672,23 @@ function GitHubBentoCard({ cardBase, vignette }) {
         }
       }
     }
-    fetchStats();
-    return () => { cancelled = true; };
+
+    if (cardRef.current && typeof IntersectionObserver !== 'undefined') {
+      observer = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          fetchStats();
+          if (observer) observer.disconnect();
+        }
+      }, { rootMargin: '200px' });
+      observer.observe(cardRef.current);
+    } else {
+      fetchStats();
+    }
+
+    return () => {
+      cancelled = true;
+      if (observer) observer.disconnect();
+    };
   }, []);
 
   const STAT_ITEMS = stats ? [
@@ -671,7 +698,7 @@ function GitHubBentoCard({ cardBase, vignette }) {
   ] : [null, null, null];
 
   return (
-    <div className={`${cardBase} relative overflow-hidden`} style={{ minHeight: 380 }}>
+    <div ref={cardRef} className={`${cardBase} relative overflow-hidden`} style={{ minHeight: 380 }}>
       <div className={vignette} />
 
       {/* Subtle green ambient glow */}
@@ -925,7 +952,7 @@ const About = () => {
             <div className="sm:hidden"><PhotoCardsGroup mobile={true} /></div>
             <div className="flex justify-center gap-6 text-gray-400 relative z-10">
               {/* LinkedIn */}
-              <a href="https://www.linkedin.com/in/moin-build/" aria-label="LinkedIn"
+              <a href="https://www.linkedin.com/in/moin-build/" aria-label="LinkedIn Profile"
                 className="hover:text-white transition-colors"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)' }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">

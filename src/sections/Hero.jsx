@@ -5,8 +5,8 @@ const heroStyles = `
   
 
   @keyframes moinFadeIn {
-    0%   { opacity: 0; }
-    100% { opacity: 1; }
+    0%   { opacity: 0.85; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
   @keyframes glassUp {
     0%   { opacity: 0; transform: translateY(48px); filter: blur(12px); }
@@ -18,7 +18,7 @@ const heroStyles = `
     100% { opacity: 1; transform: translateY(0); }
   }
 
-  .moin-anim        { animation: moinFadeIn  1.4s cubic-bezier(0.22,1,0.36,1) 0.1s  both; }
+  .moin-anim        { animation: moinFadeIn  0.8s cubic-bezier(0.22,1,0.36,1) 0s   both; }
   .tagline-caps-anim { animation: glassUp      1.0s cubic-bezier(0.22,1,0.36,1) 0.7s  both; }
   .tagline-serif-anim{ animation: glassUp      1.0s cubic-bezier(0.22,1,0.36,1) 1.0s  both; }
   .bottom-anim       { animation: fadeUpSoft   0.8s ease-out                    1.4s  both; }

@@ -12,7 +12,7 @@ const FALLBACK_PROJECTS = [
         labels: [],
         desktop: { bg: '#0a0a0a', accent: '#a855f7' },
         mobile: { bg: '#0a0a0a', accent: '#a855f7', label: 'Build a Website' },
-        images: { desktop: '/buildo-laptop.png', mobile: '/mobile-buildo.png' },
+        images: { desktop: '/buildo-laptop.webp', mobile: '/mobile-buildo.webp' },
         live_url: 'https://buildo.app', github_url: '',
     },
     {

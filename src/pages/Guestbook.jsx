@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import {
+  ClerkProvider,
   useUser,
   useClerk,
   SignInButton,
@@ -909,7 +910,7 @@ async function syncClerkProfile(user) {
 /* ═══════════════════════════════════════════════════════════════
    MAIN GUESTBOOK PAGE
    ═══════════════════════════════════════════════════════════════ */
-export default function Guestbook() {
+function GuestbookContent() {
   const { isLoaded, isSignedIn, user } = useUser();
   const { openSignIn, openSignUp, openUserProfile, signOut } = useClerk();
 
@@ -1321,5 +1322,18 @@ export default function Guestbook() {
         document.body
       )}
     </main>
+  );
+}
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+export default function Guestbook() {
+  if (!PUBLISHABLE_KEY) {
+    return <GuestbookContent />;
+  }
+  return (
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/guestbook">
+      <GuestbookContent />
+    </ClerkProvider>
   );
 }

@@ -21,7 +21,7 @@ const LINKS = [
         id: 'linkedin',
         name: 'LinkedIn',
         description: 'Connect professionally and explore my career journey.',
-        url: 'https://linkedin.com/in/moin-s-sheikh',
+        url: 'https://www.linkedin.com/in/moin-build/',
         accent: '#60a5fa',
         icon: (
             <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">

@@ -115,4 +115,7 @@ export default defineConfig({
       'fifth-puts-sand-grants.trycloudflare.com',
     ],
   },
+  build: {
+    sourcemap: false,
+  },
 })
