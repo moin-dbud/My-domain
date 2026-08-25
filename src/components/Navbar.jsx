@@ -126,6 +126,138 @@ const navbarStyles = `
     opacity: 0;
     transition: transform 0.08s ease, opacity 0.08s ease;
   }
+
+  /* ── Sliding Text CTA (Book a Call) ── */
+  .sliding-text-cta {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    cursor: pointer;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: -0.01em;
+    background: #121212;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 9999px;
+    padding: 8px 20px;
+    flex-shrink: 0;
+    transition: transform 1s cubic-bezier(0.15,0.83,0.66,1),
+                color 0.5s ease,
+                box-shadow 1s cubic-bezier(0.15,0.83,0.66,1),
+                border-color 0.5s ease;
+    box-shadow: 0 2.8px 2.2px rgba(0,0,0,0.2),
+                0 6.7px 5.3px rgba(0,0,0,0.25);
+  }
+  .sliding-text-cta:hover {
+    transform: translateY(-3px);
+    color: white;
+    border-color: rgba(255,255,255,0.18);
+    box-shadow: 0 2.8px 2.2px rgba(0,0,0,0.3),
+                0 6.7px 5.3px rgba(0,0,0,0.35),
+                0 12.5px 10px rgba(0,0,0,0.4);
+  }
+
+  /* ── Label layers ── */
+  .sliding-text-cta__label {
+    display: block;
+    font-weight: 500;
+    border-radius: 9999px;
+    white-space: nowrap;
+  }
+  .sliding-text-cta__label--original {
+    position: relative;
+    z-index: 10;
+    transition: transform 0.5s ease-out,
+                opacity   0.5s ease-out,
+                filter    0.5s ease-out;
+  }
+  .sliding-text-cta:hover .sliding-text-cta__label--original {
+    transform: translateY(32px);
+    opacity: 0;
+    filter: blur(12px);
+  }
+  .sliding-text-cta__label--clone {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-32px);
+    opacity: 0;
+    filter: blur(12px);
+    transition: transform 0.3s ease-in-out,
+                opacity   0.3s ease-in-out,
+                filter    0.3s ease-in-out;
+  }
+  .sliding-text-cta:hover .sliding-text-cta__label--clone {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  /* ── Bottom underline ── */
+  .sliding-text-cta__underline {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 70%;
+    height: 1px;
+    transform: translateX(-50%);
+    opacity: 0;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.5), transparent);
+    border-radius: 9999px;
+    filter: blur(2px);
+    pointer-events: none;
+    transition: opacity 1s cubic-bezier(0.15,0.83,0.66,1);
+  }
+  .sliding-text-cta:hover .sliding-text-cta__underline {
+    opacity: 0.8;
+  }
+
+  /* ── Bottom glow ── */
+  .sliding-text-cta__glow {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    opacity: 0;
+    background: linear-gradient(to top, rgba(255,255,255,0.15), rgba(255,255,255,0.06) 50%, transparent);
+    border-radius: 9999px;
+    pointer-events: none;
+    transition: opacity 1s cubic-bezier(0.15,0.83,0.66,1);
+  }
+  .sliding-text-cta:hover .sliding-text-cta__glow {
+    opacity: 0.6;
+  }
+
+  /* ── Mobile: lighter, no blur, simple fade ── */
+  @media (max-width: 640px) {
+    .sliding-text-cta {
+      padding: 6px 16px;
+      font-size: 0.8125rem;
+      min-width: unset;
+      box-shadow: none;
+    }
+    .sliding-text-cta:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .sliding-text-cta:hover .sliding-text-cta__label--original {
+      filter: none;
+      transform: translateY(24px);
+    }
+    .sliding-text-cta:hover .sliding-text-cta__label--clone {
+      filter: none;
+      transform: translateY(0);
+    }
+  }
 `;
 
 /* ─── More dropdown items ─────────────────────────────────── */
@@ -529,13 +661,19 @@ export default function Navbar() {
                             </svg>
                         </button>
 
-                        {/* Book a Call */}
+                        {/* Book a Call — Sliding Text CTA */}
                         <button
-                            className="text-white text-sm font-medium rounded-full bg-[#121212] px-5 py-1.5"
-                            style={{ flexShrink: 0 }}
+                            className="sliding-text-cta group"
                             onClick={(e) => floodNavigate('/book-a-call', e)}
                         >
-                            Book a Call
+                            {/* Original text — slides down + blurs on hover */}
+                            <span className="sliding-text-cta__label sliding-text-cta__label--original">Book a Call</span>
+                            {/* Clone text — slides in from top on hover */}
+                            <span className="sliding-text-cta__label sliding-text-cta__label--clone">Book a Call</span>
+                            {/* Bottom underline gradient */}
+                            <span aria-hidden="true" className="sliding-text-cta__underline" />
+                            {/* Bottom light gradient */}
+                            <span aria-hidden="true" className="sliding-text-cta__glow" />
                         </button>
                     </div>
                 </motion.div>
