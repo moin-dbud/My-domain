@@ -561,10 +561,9 @@ export default function Navbar() {
                 <div className="flex items-center gap-2">
                     <a
                         href="/"
-                        className="text-white font-semibold text-base"
-                        style={{ letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
+                        className="flex items-center gap-2 w-9"
                     >
-                        MS
+                        <img src="/cropped_circle_image.webp" alt="" />
                     </a>
 
                     {/* Divider line — fades out after text has gone */}
