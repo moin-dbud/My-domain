@@ -329,10 +329,9 @@ function BlogSkeleton() {
 function AuthorCard() {
   const socials = [
     { icon: <GithubIcon />, href: 'https://github.com/moin-dbud', label: 'GitHub' },
-    { icon: <LinkedinIcon />, href: 'https://linkedin.com', label: 'LinkedIn' },
-    { icon: <XIcon />, href: 'https://twitter.com', label: 'X' },
-    { icon: <TelegramIcon />, href: 'https://t.me', label: 'Telegram' },
-    { icon: <InstagramIcon />, href: 'https://instagram.com', label: 'Instagram' },
+    { icon: <LinkedinIcon />, href: 'https://www.linkedin.com/in/moin-build/', label: 'LinkedIn' },
+    { icon: <XIcon />, href: 'https://x.com/Moin_Sheikh09', label: 'X' },
+    { icon: <InstagramIcon />, href: 'https://instagram.com/moin__sheikh_18', label: 'Instagram' },
   ];
 
   return (
