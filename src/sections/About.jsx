@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, cloneElement } from "react";
+import React, { useState, useEffect, useRef, cloneElement } from "react";
 import {
   motion,
   useScroll,
@@ -665,7 +665,8 @@ function GitHubBentoCard({ cardBase, vignette }) {
           setStats({ repos: user.public_repos, followers: user.followers, last30, totalYear });
           setLoading(false);
         }
-      } catch (_) {
+      } catch (e) {
+        console.log(e);
         if (!cancelled) {
           setStats({ repos: 12, followers: 24, last30: 0, totalYear: 0 });
           setLoading(false);
@@ -900,7 +901,7 @@ const About = () => {
   const timeStr = time.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
 
   const copyEmail = async () => {
-    try { await navigator.clipboard.writeText(email); } catch (_) { }
+    try { await navigator.clipboard.writeText(email); } catch (e) { console.log(e); }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
