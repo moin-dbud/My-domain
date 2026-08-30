@@ -116,7 +116,7 @@ function ChatPreview() {
                     marginLeft: 4,
                 }}>
                     <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.06em' }}>
-                        moin.dev/playground
+                        moinsheikh.in/playground
                     </span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
